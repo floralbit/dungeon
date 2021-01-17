@@ -42,20 +42,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 
-	// register client
-	model.ConnToClient[ws] = &model.Client{
-		Conn: ws,
-	}
-
-	for {
-		var e model.Event
-		err := ws.ReadJSON(&e)
-		if err != nil {
-			log.Printf("error: %v", err)
-			delete(model.ConnToClient, ws)
-			break
-		}
-
-		game.In <- e // send event to gameloop
-	}
+	c := model.NewClient(ws, game.In)
+	go c.HandleOutputs()
+	c.HandleInputs()
 }

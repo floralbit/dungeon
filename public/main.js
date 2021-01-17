@@ -12,7 +12,9 @@ window.onload = function() {
         for (let i = 0; i < 10; i++) {
             ws.send(
                 JSON.stringify({
-                    data: `${i}`
+                    chatMessage: {
+                        data: `${i}`
+                    }
                 })
             );
         }

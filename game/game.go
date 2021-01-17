@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/floralbit/dungeonserv/model"
@@ -44,24 +42,27 @@ func processEvents(dt float64) {
 	}
 }
 
+func update(dt float64) {
+	// do game logic updates (monsters, whatever)
+}
+
 func handleMessage(e model.Event) {
-	// for now, just send to everyone connected lol
-	res := model.Event{
-		Data: e.Data,
-	}
-
-	fmt.Println(res)
-
-	for _, client := range model.ConnToClient {
-		err := client.Conn.WriteJSON(res)
-		if err != nil {
-			log.Printf("error: %v", err)
-			client.Conn.Close()
-			delete(model.ConnToClient, client.Conn)
-		}
+	// TODO: do something about this nasty dispatch, will be a pain to maintain
+	switch {
+	case e.ChatMessage != nil:
+		handleChatMessage(e.ChatMessage)
 	}
 }
 
-func update(dt float64) {
-	// do game logic updates (monsters, whatever)
+func handleChatMessage(msg *model.ChatMessage) {
+	res := model.Event{
+		ChatMessage: &model.ChatMessage{
+			Data: msg.Data,
+		},
+	}
+
+	// for now just pass to all clients
+	for _, client := range model.ConnToClient {
+		client.In <- res
+	}
 }
