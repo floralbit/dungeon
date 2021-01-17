@@ -10,10 +10,10 @@ const tickLength = 100 // in ms
 const eventBufferSize = 256
 
 // In ...
-var In = make(chan model.Event, eventBufferSize)
+var In = make(chan model.ClientEvent, eventBufferSize)
 
 // Out ...
-var Out = make(chan model.Event, eventBufferSize)
+var Out = make(chan model.ServerEvent, eventBufferSize)
 
 // Run ...
 func Run() {
@@ -34,8 +34,8 @@ func processEvents(dt float64) {
 	// if the inbounds are so fast that we never drain the channel
 	for {
 		select {
-		case msg := <-In:
-			handleMessage(msg)
+		case e := <-In:
+			handleEvent(e)
 		default:
 			return // In is empty
 		}
@@ -46,18 +46,18 @@ func update(dt float64) {
 	// do game logic updates (monsters, whatever)
 }
 
-func handleMessage(e model.Event) {
+func handleEvent(e model.ClientEvent) {
 	// TODO: do something about this nasty dispatch, will be a pain to maintain
 	switch {
-	case e.ChatMessage != nil:
-		handleChatMessage(e.ChatMessage)
+	case e.Chat != nil:
+		handleChatEvent(e.Chat)
 	}
 }
 
-func handleChatMessage(msg *model.ChatMessage) {
-	res := model.Event{
-		ChatMessage: &model.ChatMessage{
-			Data: msg.Data,
+func handleChatEvent(e *model.ClientChatEvent) {
+	res := model.ServerEvent{
+		Chat: &model.ServerChatEvent{
+			Message: e.Message,
 		},
 	}
 

@@ -16,25 +16,25 @@ type Client struct {
 	Conn    *websocket.Conn
 	Account *Account
 
-	Out chan Event // from connection to gameloop
-	In  chan Event // from game to connection
+	Out chan<- ClientEvent // to gameloop
+	In  chan ServerEvent   // from gameLoop
 }
 
 // NewClient ...
-func NewClient(conn *websocket.Conn, gameChan chan Event) *Client {
+func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent) *Client {
 	c := &Client{
 		Conn: conn,
-		Out:  gameChan,
-		In:   make(chan Event, eventBufferSize),
+		Out:  outChan,
+		In:   make(chan ServerEvent, eventBufferSize),
 	}
 	ConnToClient[conn] = c
 	return c
 }
 
-// HandleInputs runs in websocket handler's goroutine (per conn)
-func (c *Client) HandleInputs() {
+// HandleInbound runs in websocket handler's goroutine (per conn)
+func (c *Client) HandleInbound() {
 	for {
-		var e Event
+		var e ClientEvent
 		err := c.Conn.ReadJSON(&e)
 		if err != nil {
 			log.Printf("error: %v", err)
@@ -46,8 +46,8 @@ func (c *Client) HandleInputs() {
 	}
 }
 
-// HandleOutputs runs in its own goroutine too
-func (c *Client) HandleOutputs() {
+// HandleOutbound runs in its own goroutine too
+func (c *Client) HandleOutbound() {
 	for e := range c.In {
 		err := c.Conn.WriteJSON(e)
 		if err != nil {

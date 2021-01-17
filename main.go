@@ -43,6 +43,6 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	defer ws.Close()
 
 	c := model.NewClient(ws, game.In)
-	go c.HandleOutputs()
-	c.HandleInputs()
+	go c.HandleOutbound()
+	c.HandleInbound()
 }
