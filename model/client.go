@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -42,7 +43,46 @@ func (c *Client) HandleInbound() {
 			break
 		}
 
-		c.Out <- e // send event to gameloop
+		e.Sender = c // label sender
+
+		switch {
+		case e.Register != nil:
+			account, err := Register(e.Register.Username, e.Register.Password)
+			if err != nil {
+				c.SendError(err)
+				continue
+			}
+
+			c.Account = account
+			c.In <- ServerEvent{
+				Register: &ServerRegisterEvent{
+					Ok: true,
+				},
+			}
+
+		case e.Login != nil:
+			account, err := Login(e.Register.Username, e.Register.Password)
+			if err != nil {
+				c.SendError(err)
+				continue
+			}
+
+			c.Account = account
+			c.In <- ServerEvent{
+				Login: &ServerLoginEvent{
+					Ok: true,
+				},
+			}
+
+		case e.Chat != nil:
+			if c.Account == nil {
+				c.SendError(errors.New("must be logged in to chat"))
+				continue
+			}
+
+			c.Out <- e // send event to gameloop
+		}
+
 	}
 }
 
@@ -55,5 +95,14 @@ func (c *Client) HandleOutbound() {
 			c.Conn.Close()
 			delete(ConnToClient, c.Conn)
 		}
+	}
+}
+
+// SendError ...
+func (c *Client) SendError(err error) {
+	c.In <- ServerEvent{
+		Error: &ServerErrorEvent{
+			Message: err.Error(),
+		},
 	}
 }

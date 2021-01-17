@@ -50,14 +50,15 @@ func handleEvent(e model.ClientEvent) {
 	// TODO: do something about this nasty dispatch, will be a pain to maintain
 	switch {
 	case e.Chat != nil:
-		handleChatEvent(e.Chat)
+		handleChatEvent(e)
 	}
 }
 
-func handleChatEvent(e *model.ClientChatEvent) {
+func handleChatEvent(e model.ClientEvent) {
 	res := model.ServerEvent{
 		Chat: &model.ServerChatEvent{
-			Message: e.Message,
+			Message: e.Chat.Message,
+			From:    e.Sender.Account.Username,
 		},
 	}
 

@@ -2,8 +2,11 @@ package model
 
 // ClientEvent ...
 type ClientEvent struct {
-	Chat  *ClientChatEvent  `json:"chat,omitempty"`
-	Login *ClientLoginEvent `json:"login,omitempty"`
+	Chat     *ClientChatEvent     `json:"chat,omitempty"`
+	Login    *ClientLoginEvent    `json:"login,omitempty"`
+	Register *ClientRegisterEvent `json:"register,omitempty"`
+
+	Sender *Client `json:"-"`
 }
 
 // ClientChatEvent ...
