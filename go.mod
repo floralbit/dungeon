@@ -1,4 +1,4 @@
-module github.com/floralbit/dungeonserv
+module github.com/floralbit/dungeon
 
 go 1.14
 

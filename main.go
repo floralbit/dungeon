@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/floralbit/dungeonserv/game"
-	"github.com/floralbit/dungeonserv/model"
+	"github.com/floralbit/dungeon/game"
+	"github.com/floralbit/dungeon/model"
 	"github.com/gorilla/websocket"
 )
 

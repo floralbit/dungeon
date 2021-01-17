@@ -3,7 +3,7 @@ package game
 import (
 	"time"
 
-	"github.com/floralbit/dungeonserv/model"
+	"github.com/floralbit/dungeon/model"
 )
 
 const tickLength = 100 // in ms
