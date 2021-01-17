@@ -48,6 +48,7 @@ func update(dt float64) {
 
 func handleEvent(e model.ClientEvent) {
 	// TODO: do something about this nasty dispatch, will be a pain to maintain
+	// TODO: notify others when someone joins (login) or leaves
 	switch {
 	case e.Chat != nil:
 		handleChatEvent(e)

@@ -5,6 +5,7 @@ type ClientEvent struct {
 	Chat     *ClientChatEvent     `json:"chat,omitempty"`
 	Login    *ClientLoginEvent    `json:"login,omitempty"`
 	Register *ClientRegisterEvent `json:"register,omitempty"`
+	Leave    *ClientLeaveEvent    `json:"leave,omitempty"`
 
 	Sender *Client `json:"-"`
 }
@@ -24,4 +25,9 @@ type ClientLoginEvent struct {
 type ClientRegisterEvent struct {
 	Username string
 	Password string
+}
+
+// ClientLeaveEvent ...
+type ClientLeaveEvent struct {
+	Ok bool
 }

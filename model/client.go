@@ -34,9 +34,18 @@ func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent) *Client {
 
 // Close ...
 func (c *Client) Close() {
-	// TODO: notify gameloop that client dropped
 	c.Conn.Close()
 	delete(ConnToClient, c.Conn)
+
+	// was logged in, let game know they've bailed
+	if c.Account != nil {
+		c.Out <- ClientEvent{
+			Sender: c,
+			Leave: &ClientLeaveEvent{
+				Ok: true,
+			},
+		}
+	}
 }
 
 // HandleInbound runs in websocket handler's goroutine (per conn)
