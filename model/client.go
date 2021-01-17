@@ -32,6 +32,13 @@ func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent) *Client {
 	return c
 }
 
+// Close ...
+func (c *Client) Close() {
+	// TODO: notify gameloop that client dropped
+	c.Conn.Close()
+	delete(ConnToClient, c.Conn)
+}
+
 // HandleInbound runs in websocket handler's goroutine (per conn)
 func (c *Client) HandleInbound() {
 	for {
@@ -39,8 +46,8 @@ func (c *Client) HandleInbound() {
 		err := c.Conn.ReadJSON(&e)
 		if err != nil {
 			log.Printf("error: %v", err)
-			delete(ConnToClient, c.Conn)
-			break
+			c.Close()
+			return
 		}
 
 		e.Sender = c // label sender
@@ -60,8 +67,10 @@ func (c *Client) HandleInbound() {
 				},
 			}
 
+			c.Out <- e // send event to gameloop so new player can be made
+
 		case e.Login != nil:
-			account, err := Login(e.Register.Username, e.Register.Password)
+			account, err := Login(e.Login.Username, e.Login.Password)
 			if err != nil {
 				c.SendError(err)
 				continue
@@ -73,6 +82,8 @@ func (c *Client) HandleInbound() {
 					Ok: true,
 				},
 			}
+
+			c.Out <- e // send event to gameloop so new player can be spawned
 
 		case e.Chat != nil:
 			if c.Account == nil {
@@ -92,8 +103,8 @@ func (c *Client) HandleOutbound() {
 		err := c.Conn.WriteJSON(e)
 		if err != nil {
 			log.Printf("error: %v", err)
-			c.Conn.Close()
-			delete(ConnToClient, c.Conn)
+			c.Close()
+			return
 		}
 	}
 }

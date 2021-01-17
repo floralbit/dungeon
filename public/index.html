@@ -1,11 +1,36 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>dungeonserv</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>dungeon</title>
+        <link href="/style.css" rel="stylesheet">
     </head>
 
     <body>
-        hello dungeonserv
+        <div id="wrapper">
+            <form id="register" class="input-box">
+                <input type="text" id="register-username" placeholder="Username"> <br>
+                <input type="password" id="register-password" placeholder="Password"> <br>
+                <input type="submit" value="Register">
+            </form>
+
+            <hr>
+
+            <form id="login" class="input-box">
+                <input type="text" id="login-username" placeholder="Username"> <br>
+                <input type="password" id="login-password" placeholder="Password"> <br>
+                <input type="submit" value="Login">
+            </form>
+
+            <hr>
+
+            <form id="chat" class="input-box">
+                <input type="text" id="chat-message" placeholder="Chat Message"> <br>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+
         <script src="main.js"></script>
     </body>
 </html>

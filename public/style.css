@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+}
+
+#wrapper {
+    max-width: 1080px;
+    margin-top: 1em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.input-box {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}

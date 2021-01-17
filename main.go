@@ -40,7 +40,6 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer ws.Close()
 
 	c := model.NewClient(ws, game.In)
 	go c.HandleOutbound()
