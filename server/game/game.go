@@ -35,6 +35,10 @@ func processEvents(dt float64) {
 			// TODO: do something about this nasty dispatch, will be a pain to maintain
 			// TODO: notify others when someone joins (login) or leaves
 			switch {
+			case e.Join != nil:
+				handleJoinEvent(e)
+			case e.Leave != nil:
+				handleLeaveEvent(e)
 			case e.Chat != nil:
 				handleChatEvent(e)
 			}
@@ -46,6 +50,32 @@ func processEvents(dt float64) {
 
 func update(dt float64) {
 	// do game logic updates (monsters, whatever)
+}
+
+func handleJoinEvent(e model.ClientEvent) {
+	res := model.ServerEvent{
+		Join: &model.ServerJoinEvent{
+			From: e.Sender.Account.Username,
+		},
+	}
+
+	// for now just pass to all clients
+	for _, client := range model.ConnToClient {
+		client.In <- res
+	}
+}
+
+func handleLeaveEvent(e model.ClientEvent) {
+	res := model.ServerEvent{
+		Leave: &model.ServerLeaveEvent{
+			From: e.Sender.Account.Username,
+		},
+	}
+
+	// for now just pass to all clients
+	for _, client := range model.ConnToClient {
+		client.In <- res
+	}
 }
 
 func handleChatEvent(e model.ClientEvent) {

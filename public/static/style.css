@@ -1,7 +1,14 @@
 body {
+    font-family: 'Courier New', Courier, monospace;
     margin: 0;
     padding: 0;
-    background: #fff;
+    background: #000000;
+    color: #ffffff;
+    text-align: center;
+}
+
+a {
+    color: #ffffff;
 }
 
 #wrapper {
@@ -11,8 +18,90 @@ body {
     margin-right: auto;
 }
 
-.input-box {
+form {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+}
+
+input[type=text] {
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    padding: .5em;
+    margin: .5em 0;
+    box-sizing: border-box;
+    font-size: 1em;
+    border: 1px solid #ffffff;
+    background: none;
+    color: #ffffff;
+}
+
+input[type=password] {
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    padding: .5em;
+    margin: .5em 0;
+    box-sizing: border-box;
+    font-size: 1em;
+    border: 1px solid #ffffff;
+    background: none;
+    color: #ffffff;
+}
+
+input[type=submit] {
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    padding: .5em;
+    margin: .5em 0;
+    font-size: 1em;
+    border: 1px solid #ffffff;
+    background: #ffffff;
+    color: #000000;
+}
+
+.box {
+    margin: 1em;
+    padding: 1em;
+    border: 1px dashed #ffffff;
+}
+
+h2 {
+    margin: 0;
+}
+
+#about, #login, #register {
+    display: none;
+    border: none;
+}
+
+#about:target {
+    display: block;
+}
+
+#login:target {
+    display: block;
+}
+
+#register:target {
+    display: block;
+}
+
+.chat-log {
+    max-height: 600px;
+    overflow-y: scroll;
+    text-align: left;
+    list-style-type: none;
+    margin: 0;
+    margin-bottom: 1em;
+    padding: 0;
+}
+
+canvas {
+    border: 1px dashed #ffffff;
+}
+
+.game-box {
+    width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
 }

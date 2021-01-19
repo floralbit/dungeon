@@ -1,9 +1,27 @@
+<!DOCTYPE html>
 <html>
     <head>
-
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>dungeon</title>
+        <link href="/static/style.css" rel="stylesheet">
     </head>
 
     <body>
-        game goes here
+        <br>
+
+        <div class="box game-box">
+            <ul class="chat-log" id="chat-log">
+            </ul>
+            <input id="chat" type="text" name="chat" placeholder="chat"> <br>
+        </div>
+
+        <!-- <canvas width=1280 height=720></canvas> -->
+    
+        <div class="box game-box">
+            <a href="/logout">logout</a>
+        </div>
+
+        <script src="/static/main.js"></script>
     </body>
 </html>

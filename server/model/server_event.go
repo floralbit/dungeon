@@ -18,15 +18,15 @@ type ServerErrorEvent struct {
 // ServerChatEvent ...
 type ServerChatEvent struct {
 	Message string
-	From    string // UUID of sender
+	From    string // username of sender
 }
 
 // ServerJoinEvent ...
 type ServerJoinEvent struct {
-	From string // UUID of joining player
+	From string // username of joining player
 }
 
 // ServerLeaveEvent ...
 type ServerLeaveEvent struct {
-	From string // UUID of leaving player
+	From string // username of leaving player
 }

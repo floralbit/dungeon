@@ -30,6 +30,15 @@ func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent, account *store.
 		Account: account,
 	}
 	ConnToClient[conn] = c
+
+	// notify join
+	outChan <- ClientEvent{
+		Sender: c,
+		Join: &ClientJoinEvent{
+			Ok: true,
+		},
+	}
+
 	return c
 }
 
@@ -38,14 +47,12 @@ func (c *Client) Close() {
 	c.Conn.Close()
 	delete(ConnToClient, c.Conn)
 
-	// was logged in, let game know they've bailed
-	if c.Account != nil {
-		c.Out <- ClientEvent{
-			Sender: c,
-			Leave: &ClientLeaveEvent{
-				Ok: true,
-			},
-		}
+	// let game know they've bailed
+	c.Out <- ClientEvent{
+		Sender: c,
+		Leave: &ClientLeaveEvent{
+			Ok: true,
+		},
 	}
 }
 
