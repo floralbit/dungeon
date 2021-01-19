@@ -1,5 +1,7 @@
 body {
   margin: 0;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 #canvas {
@@ -11,4 +13,44 @@ body {
   image-rendering: -webkit-crisp-edges;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+#chat-log-wrapper {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+#chat-log {
+  margin-left: .5em;
+  margin-right: .5em;
+  margin-bottom: .5em;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+}
+
+#chat-log ul {
+  list-style-type: none;
+  margin: 0;
+  padding: .5em;
+  max-height: 5em;
+  overflow-y: scroll;
+}
+
+#chat-log input[type=text] {
+  font-family: 'Courier New', Courier, monospace;
+  width: 100%;
+  box-sizing: border-box;
+  padding: .5em;
+  border: none;
+  border-top: 1px solid #ffffff;
+  background: none;
+  color: #ffffff;
+  font-size: 1em;
+}
+
+#chat-log input[type=text]:focus {
+  outline-width: 0;
 }

@@ -1,13 +1,23 @@
 import React, { Component } from 'react';
 
+import ChatLog from './chatlog';
+
 class UI extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    // TODO: use redux because this is awful.
+    this.state = {
+      messages: [],
+      network: {},
+    };
   }
 
   render() {
-    return <div>Hello from react</div>;
+    return (
+      <>
+        <ChatLog messages={this.state.messages} network={this.state.network} />
+      </>
+    );
   }
 }
 

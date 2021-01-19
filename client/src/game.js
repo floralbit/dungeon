@@ -23,7 +23,7 @@ class Game {
     this.tilemap = new Tilemap();
 
     // connect to the network
-    this.network = new Network();
+    this.network = new Network(this.ui);
 
     // todo: load map by network
     this.currentMap = new Terrain(20, 20);
@@ -52,7 +52,9 @@ class Game {
 
   draw(dt) {
     this.ctx.save();
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = '#292929'; // grey
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
     // move camera
     this.ctx.scale(this.camera.zoom, this.camera.zoom);
