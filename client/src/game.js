@@ -1,12 +1,12 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
 import Terrain from './terrain';
-import Network from './network';
 
 class Game {
-  constructor(canvas, ctx, ui) {
+  constructor(canvas, ctx, store, network) {
     this.canvas = canvas;
     this.ctx = ctx;
-    this.ui = ui; // we can just ui.setState() to update react I guess
+    this.store = store;
+    this.network = network;
     
     this.camera = {
       x: 0,
@@ -22,9 +22,6 @@ class Game {
     // asset loads
     this.tilemap = new Tilemap();
 
-    // connect to the network
-    this.network = new Network(this.ui);
-
     // todo: load map by network
     this.currentMap = new Terrain(20, 20);
 
@@ -33,7 +30,7 @@ class Game {
     window.onkeyup = this.keyUpHandler.bind(this);
     this.canvas.onclick = this.mouseClickHandler.bind(this);
 
-    return Promise.all([this.tilemap.load(), this.network.connect()]);
+    return Promise.all([this.tilemap.load()]);
   }
 
   update(dt) {

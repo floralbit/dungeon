@@ -1,9 +1,6 @@
+import {receiveMessage} from './redux/actions';
 
 class Network {
-  constructor(ui) {
-    this.ui = ui; // this sucks lol, we need to store state somewhere else, let's use redux eventually or something.
-  }
-
   connect() {
     this.ws = new WebSocket('ws://' + window.location.host + '/ws');
     this.ws.addEventListener('message', this.handleMessage.bind(this))
@@ -15,6 +12,11 @@ class Network {
     });
   }
 
+  // this is a hack
+  setStore(store) {
+    this.store = store;
+  }
+
   handleMessage(event) {
     const data = JSON.parse(event.data);
 
@@ -22,10 +24,7 @@ class Network {
 
     if (data.join || data.leave || data.chat) {
       this.messages.push(data);
-      this.ui.setState({
-        messages: this.messages,
-        network: this,
-      });
+      this.store.dispatch(receiveMessage(data));
     }
   }
 

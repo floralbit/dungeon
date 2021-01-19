@@ -1,7 +1,8 @@
 import React, { Component, useRef, useEffect, useState } from 'react';
+import {sendChat} from '../redux/actions';
 
 function ChatLog(props) {
-  const {messages, network} = props;
+  const {messages} = props;
 
   const messagesEndRef = useRef(null);
 
@@ -13,7 +14,8 @@ function ChatLog(props) {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      network.sendChat(chatInput);
+      // network.sendChat(chatInput);
+      props.dispatch(sendChat(chatInput));
       setChatInput('');
     }
   }

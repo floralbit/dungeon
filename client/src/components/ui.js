@@ -1,24 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 
 import ChatLog from './chatlog';
 
-class UI extends Component {
-  constructor(props) {
-    super(props);
-    // TODO: use redux because this is awful.
-    this.state = {
-      messages: [],
-      network: {},
-    };
-  }
-
-  render() {
-    return (
-      <>
-        <ChatLog messages={this.state.messages} network={this.state.network} />
-      </>
-    );
-  }
+function UI(props) {
+  return (
+    <>
+      <ChatLog {...props} />
+    </>
+  );
 }
 
-export default UI;
+export default connect(s => s)(UI);
