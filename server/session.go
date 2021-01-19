@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/floralbit/dungeon/model"
+	"github.com/floralbit/dungeon/store"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 )
@@ -19,15 +19,15 @@ func authenticate(w http.ResponseWriter, r *http.Request, newAccount bool) error
 		return errors.New("username or password not set")
 	}
 
-	var account *model.Account
+	var account *store.Account
 	var err error
 	if newAccount {
-		account, err = model.Register(username, password)
+		account, err = store.RegisterAccount(username, password)
 		if err != nil {
 			return err
 		}
 	} else {
-		account, err = model.Login(username, password)
+		account, err = store.LoginAccount(username, password)
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func authenticate(w http.ResponseWriter, r *http.Request, newAccount bool) error
 }
 
 // returns account UUID if authenticated, errors if not
-func authenticated(w http.ResponseWriter, r *http.Request) (*model.Account, error) {
+func authenticated(w http.ResponseWriter, r *http.Request) (*store.Account, error) {
 	session, _ := sessionStore.Get(r, "dungeon")
 
 	rawUUID, ok := session.Values["UUID"]
@@ -56,7 +56,10 @@ func authenticated(w http.ResponseWriter, r *http.Request) (*model.Account, erro
 		return nil, err
 	}
 
-	account := model.GetAccountByUUID(accountUUID)
+	account, err := store.GetAccount(accountUUID)
+	if err != nil {
+		return nil, err
+	}
 	if account == nil {
 		return nil, errors.New("account not found")
 	}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/floralbit/dungeon/game"
 	"github.com/floralbit/dungeon/model"
+	"github.com/floralbit/dungeon/store"
 	"github.com/gorilla/websocket"
 )
 
@@ -29,6 +30,8 @@ func main() {
 
 	// websocket
 	http.HandleFunc("/ws", handleWs)
+
+	store.Init() // connect to db
 
 	go game.Run() // kick off gameloop
 

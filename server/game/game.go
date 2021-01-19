@@ -12,9 +12,6 @@ const eventBufferSize = 256
 // In ...
 var In = make(chan model.ClientEvent, eventBufferSize)
 
-// Out ...
-var Out = make(chan model.ServerEvent, eventBufferSize)
-
 // Run ...
 func Run() {
 	ticker := time.NewTicker(tickLength * time.Millisecond)
@@ -35,7 +32,12 @@ func processEvents(dt float64) {
 	for {
 		select {
 		case e := <-In:
-			handleEvent(e)
+			// TODO: do something about this nasty dispatch, will be a pain to maintain
+			// TODO: notify others when someone joins (login) or leaves
+			switch {
+			case e.Chat != nil:
+				handleChatEvent(e)
+			}
 		default:
 			return // In is empty
 		}
@@ -44,15 +46,6 @@ func processEvents(dt float64) {
 
 func update(dt float64) {
 	// do game logic updates (monsters, whatever)
-}
-
-func handleEvent(e model.ClientEvent) {
-	// TODO: do something about this nasty dispatch, will be a pain to maintain
-	// TODO: notify others when someone joins (login) or leaves
-	switch {
-	case e.Chat != nil:
-		handleChatEvent(e)
-	}
 }
 
 func handleChatEvent(e model.ClientEvent) {

@@ -3,6 +3,7 @@ package model
 import (
 	"log"
 
+	"github.com/floralbit/dungeon/store"
 	"github.com/gorilla/websocket"
 )
 
@@ -14,14 +15,14 @@ var ConnToClient = map[*websocket.Conn]*Client{}
 // Client ...
 type Client struct {
 	Conn    *websocket.Conn
-	Account *Account
+	Account *store.Account
 
 	Out chan<- ClientEvent // to gameloop
 	In  chan ServerEvent   // from gameLoop
 }
 
 // NewClient ...
-func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent, account *Account) *Client {
+func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent, account *store.Account) *Client {
 	c := &Client{
 		Conn:    conn,
 		Out:     outChan,
