@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -22,11 +21,12 @@ type Client struct {
 }
 
 // NewClient ...
-func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent) *Client {
+func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent, account *Account) *Client {
 	c := &Client{
-		Conn: conn,
-		Out:  outChan,
-		In:   make(chan ServerEvent, eventBufferSize),
+		Conn:    conn,
+		Out:     outChan,
+		In:      make(chan ServerEvent, eventBufferSize),
+		Account: account,
 	}
 	ConnToClient[conn] = c
 	return c
@@ -62,44 +62,7 @@ func (c *Client) HandleInbound() {
 		e.Sender = c // label sender
 
 		switch {
-		case e.Register != nil:
-			account, err := Register(e.Register.Username, e.Register.Password)
-			if err != nil {
-				c.SendError(err)
-				continue
-			}
-
-			c.Account = account
-			c.In <- ServerEvent{
-				Register: &ServerRegisterEvent{
-					Ok: true,
-				},
-			}
-
-			c.Out <- e // send event to gameloop so new player can be made
-
-		case e.Login != nil:
-			account, err := Login(e.Login.Username, e.Login.Password)
-			if err != nil {
-				c.SendError(err)
-				continue
-			}
-
-			c.Account = account
-			c.In <- ServerEvent{
-				Login: &ServerLoginEvent{
-					Ok: true,
-				},
-			}
-
-			c.Out <- e // send event to gameloop so new player can be spawned
-
 		case e.Chat != nil:
-			if c.Account == nil {
-				c.SendError(errors.New("must be logged in to chat"))
-				continue
-			}
-
 			c.Out <- e // send event to gameloop
 		}
 

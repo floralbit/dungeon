@@ -63,13 +63,13 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGame(w http.ResponseWriter, r *http.Request) {
-	accountUUID, err := authenticated(w, r)
+	account, err := authenticated(w, r)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	fmt.Fprintf(w, "Logged in with UUID %s", accountUUID.String())
+	fmt.Fprintf(w, "Logged in with UUID %s", account.UUID.String())
 }
 
 // spawned in a goroutine by http
@@ -81,15 +81,15 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// auth
-	accountUUID, err := authenticated(w, r)
+	account, err := authenticated(w, r)
 	if err != nil {
 		ws.Close()
 		return
 	}
 
-	fmt.Printf("%s connected\n", accountUUID.String())
+	fmt.Printf("%s connected\n", account.UUID.String())
 
-	c := model.NewClient(ws, game.In)
+	c := model.NewClient(ws, game.In, account)
 	go c.HandleOutbound()
 	c.HandleInbound()
 }
@@ -126,7 +126,7 @@ func authenticate(w http.ResponseWriter, r *http.Request, newAccount bool) error
 }
 
 // returns account UUID if authenticated, errors if not
-func authenticated(w http.ResponseWriter, r *http.Request) (*uuid.UUID, error) {
+func authenticated(w http.ResponseWriter, r *http.Request) (*model.Account, error) {
 	session, _ := sessionStore.Get(r, "dungeon")
 
 	rawUUID, ok := session.Values["UUID"]
@@ -139,5 +139,10 @@ func authenticated(w http.ResponseWriter, r *http.Request) (*uuid.UUID, error) {
 		return nil, err
 	}
 
-	return &accountUUID, nil
+	account := model.GetAccountByUUID(accountUUID)
+	if account == nil {
+		return nil, errors.New("account not found")
+	}
+
+	return account, nil
 }

@@ -2,10 +2,10 @@ package model
 
 // ClientEvent ...
 type ClientEvent struct {
-	Chat     *ClientChatEvent     `json:"chat,omitempty"`
-	Login    *ClientLoginEvent    `json:"login,omitempty"`
-	Register *ClientRegisterEvent `json:"register,omitempty"`
-	Leave    *ClientLeaveEvent    `json:"leave,omitempty"`
+	Chat *ClientChatEvent `json:"chat,omitempty"`
+
+	Join  *ClientJoinEvent  `json:"join,omitempty"`
+	Leave *ClientLeaveEvent `json:"leave,omitempty"`
 
 	Sender *Client `json:"-"`
 }
@@ -15,16 +15,9 @@ type ClientChatEvent struct {
 	Message string
 }
 
-// ClientLoginEvent ...
-type ClientLoginEvent struct {
-	Username string
-	Password string
-}
-
-// ClientRegisterEvent ...
-type ClientRegisterEvent struct {
-	Username string
-	Password string
+// ClientJoinEvent ...
+type ClientJoinEvent struct {
+	Ok bool
 }
 
 // ClientLeaveEvent ...

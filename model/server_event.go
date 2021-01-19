@@ -4,10 +4,10 @@ package model
 type ServerEvent struct {
 	Error *ServerErrorEvent `json:"error,omitempty"`
 
-	Chat     *ServerChatEvent     `json:"chat,omitempty"`
-	Login    *ServerLoginEvent    `json:"login,omitempty"`
-	Register *ServerRegisterEvent `json:"register,omitempty"`
-	Leave    *ServerLeaveEvent    `json:"leave,omitempty"`
+	Chat *ServerChatEvent `json:"chat,omitempty"`
+
+	Join  *ServerJoinEvent  `json:"join,omitempty"`
+	Leave *ServerLeaveEvent `json:"leave,omitempty"`
 }
 
 // ServerErrorEvent ...
@@ -21,15 +21,9 @@ type ServerChatEvent struct {
 	From    string // UUID of sender
 }
 
-// ServerLoginEvent ...
-type ServerLoginEvent struct {
-	Ok bool
-	// todo: fill in account data
-}
-
-// ServerRegisterEvent ...
-type ServerRegisterEvent struct {
-	Ok bool
+// ServerJoinEvent ...
+type ServerJoinEvent struct {
+	From string // UUID of joining player
 }
 
 // ServerLeaveEvent ...

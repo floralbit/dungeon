@@ -52,6 +52,11 @@ func Register(username, password string) (*Account, error) {
 	return a, nil
 }
 
+// GetAccountByUUID ...
+func GetAccountByUUID(UUID uuid.UUID) *Account {
+	return Accounts[UUID]
+}
+
 // TODO: replace with actual db query instead of linear lookup
 func getAccountByUsername(username string) *Account {
 	for _, account := range Accounts {
