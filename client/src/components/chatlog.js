@@ -14,7 +14,6 @@ function ChatLog(props) {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      // network.sendChat(chatInput);
       props.dispatch(sendChat(chatInput));
       setChatInput('');
     }

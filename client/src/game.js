@@ -2,11 +2,10 @@ import Tilemap, {TILE_SIZE} from './tilemap';
 import Terrain from './terrain';
 
 class Game {
-  constructor(canvas, ctx, store, network) {
+  constructor(canvas, ctx, store,) {
     this.canvas = canvas;
     this.ctx = ctx;
     this.store = store;
-    this.network = network;
     
     this.camera = {
       x: 0,

@@ -1,4 +1,4 @@
-import {MESSAGE_RECEIVED} from './actions';
+import {NETWORK_RECV_MESSAGE} from './actions';
 
 const initialState = {
   messages: [],
@@ -6,7 +6,7 @@ const initialState = {
 
 export default function gameReducer(state = initialState, action) {
   switch (action.type) {
-    case MESSAGE_RECEIVED:
+    case NETWORK_RECV_MESSAGE:
       const data = action.payload;
       return {
         ...state,
