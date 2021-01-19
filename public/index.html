@@ -9,17 +9,17 @@
 
     <body>
         <div id="wrapper">
-            <form id="register" class="input-box">
-                <input type="text" id="register-username" placeholder="Username"> <br>
-                <input type="password" id="register-password" placeholder="Password"> <br>
+            <form id="register" class="input-box" action="/register" method="post">
+                <input type="text" name="username" placeholder="Username"> <br>
+                <input type="password" name="password" placeholder="Password"> <br>
                 <input type="submit" value="Register">
             </form>
 
             <hr>
 
-            <form id="login" class="input-box">
-                <input type="text" id="login-username" placeholder="Username"> <br>
-                <input type="password" id="login-password" placeholder="Password"> <br>
+            <form id="login" class="input-box" action="/login" method="post">
+                <input type="text" name="username" placeholder="Username"> <br>
+                <input type="password" name="password" placeholder="Password"> <br>
                 <input type="submit" value="Login">
             </form>
 

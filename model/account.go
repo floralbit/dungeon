@@ -25,7 +25,7 @@ func Login(username, password string) (*Account, error) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword(account.HashedPassword, []byte(password)); err != nil {
-		return nil, err
+		return nil, errors.New("Passwords do not match")
 	}
 
 	return account, nil
