@@ -20,9 +20,8 @@ window.onresize = () => {
   ctx.imageSmoothingEnabled = false;
 };
 
+// connect to ws via middleware
 store.dispatch(networkConnect());
-
-const game = new Game(canvas, ctx, store);
 
 // setup UI in react
 const ui = ReactDOM.render(
@@ -33,6 +32,8 @@ const ui = ReactDOM.render(
 );
 
 // kick off game loop
+const game = new Game(canvas, ctx);
+
 game.load().then(() => {
   window.requestAnimationFrame(loop);
 });
