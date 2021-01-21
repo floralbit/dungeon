@@ -65,6 +65,11 @@ input[type=submit] {
     border: 1px dashed #ffffff;
 }
 
+.box-no-border {
+    margin: 1em;
+    padding: 1em;
+}
+
 h2 {
     margin: 0;
 }
@@ -104,4 +109,9 @@ canvas {
     width: 1250px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.tab {
+    text-decoration: underline;
+    cursor: pointer;
 }

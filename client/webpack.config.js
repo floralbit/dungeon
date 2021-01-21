@@ -1,6 +1,10 @@
 const path = require('path');
 
 module.exports = {
+  entry: {
+    game: './src/index.js',
+    landing: './src/landing.js'
+  },
   module: {
     rules: [
       {
@@ -13,7 +17,7 @@ module.exports = {
     ]
   },
   output: {
-    filename: 'client.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, '../public/static')
   }
 };
