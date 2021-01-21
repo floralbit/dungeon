@@ -1,5 +1,5 @@
 import React, { Component, useRef, useEffect, useState } from 'react';
-import {sendChat} from '../redux/actions';
+import {sendChat, setTyping} from '../redux/actions';
 
 function ChatLog(props) {
   const {messages} = props;
@@ -19,6 +19,14 @@ function ChatLog(props) {
     }
   }
 
+  const handleFocus = (event) => {
+    props.dispatch(setTyping(true));
+  }
+
+  const handleFocusOut = (event) => {
+    props.dispatch(setTyping(false));
+  }
+
   return (
     <div id="chat-log-wrapper">
       <div id="chat-log">
@@ -35,7 +43,7 @@ function ChatLog(props) {
           <div ref={messagesEndRef} />
         </ul>
         
-        <input type="text" onChange={e => setChatInput(e.target.value)} onKeyDown={handleKeyDown} value={chatInput} />
+        <input type="text" onChange={e => setChatInput(e.target.value)} onKeyDown={handleKeyDown} onFocus={handleFocus} onBlur={handleFocusOut} value={chatInput}  />
       </div>
     </div>
   );

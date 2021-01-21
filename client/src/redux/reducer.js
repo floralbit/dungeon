@@ -1,8 +1,9 @@
-import {NETWORK_RECV_MESSAGE, KEY_DOWN, KEY_UP} from './actions';
+import {NETWORK_RECV_MESSAGE, KEY_DOWN, KEY_UP, SET_TYPING} from './actions';
 
 const initialState = {
   messages: [],
   keyPressed: {},
+  isTyping: false,
 };
 
 export default function gameReducer(state = initialState, action) {
@@ -35,6 +36,13 @@ export default function gameReducer(state = initialState, action) {
           ...state.keyPressed,
           [upCode]: false,
         },
+      };
+    
+    case SET_TYPING:
+      const isTyping = action.payload;
+      return {
+        ...state,
+        isTyping,
       };
 
     default:

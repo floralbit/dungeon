@@ -30,6 +30,10 @@ class Game {
 
   update(dt) {
     const state = this.store.getState();
+
+    if (state.isTyping) {
+      return; // don't take input
+    }
      
     if (state.keyPressed['ArrowLeft']) {
       this.camera.x -= this.cameraSpeed * dt;

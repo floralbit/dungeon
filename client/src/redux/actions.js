@@ -6,6 +6,8 @@ export const NETWORK_RECV_MESSAGE = 'NETWORK_RECV_MESSAGE';
 export const KEY_DOWN = 'KEY_DOWN';
 export const KEY_UP = 'KEY_UP';
 
+export const SET_TYPING = 'SET_TYPING';
+
 // client side, just for middlewares
 export const SEND_CHAT = 'SEND_CHAT';
 
@@ -35,4 +37,9 @@ export const keyDown = (code) => ({
 export const keyUp = (code) => ({
   type: KEY_UP,
   payload: code,
+});
+
+export const setTyping = (status) => ({
+  type: SET_TYPING,
+  payload: status,
 });
