@@ -2,9 +2,10 @@ import Tilemap, {TILE_SIZE} from './tilemap';
 import Terrain from './terrain';
 
 class Game {
-  constructor(canvas, ctx) {
+  constructor(canvas, ctx, store) {
     this.canvas = canvas;
     this.ctx = ctx;
+    this.store = store;
     
     this.camera = {
       x: 0,
@@ -12,8 +13,6 @@ class Game {
       zoom: 2
     };
     this.cameraSpeed = 250;
-
-    this.keyPressedState = {};
   }
 
   load() {
@@ -24,23 +23,23 @@ class Game {
     this.currentMap = new Terrain(20, 20);
 
     // handler registering
-    window.onkeydown = this.keyDownHandler.bind(this);
-    window.onkeyup = this.keyUpHandler.bind(this);
     this.canvas.onclick = this.mouseClickHandler.bind(this);
 
     return Promise.all([this.tilemap.load()]);
   }
 
   update(dt) {
-    if (this.isKeyPressed("ArrowLeft")) {
+    const state = this.store.getState();
+     
+    if (state.keyPressed['ArrowLeft']) {
       this.camera.x -= this.cameraSpeed * dt;
-    } else if (this.isKeyPressed("ArrowRight")) {
+    } else if (state.keyPressed['ArrowRight']) {
       this.camera.x += this.cameraSpeed * dt;
     }
 
-    if (this.isKeyPressed("ArrowUp")) {
+    if (state.keyPressed['ArrowUp']) {
       this.camera.y -= this.cameraSpeed * dt;
-    } else if (this.isKeyPressed("ArrowDown")) {
+    } else if (state.keyPressed['ArrowDown']) {
       this.camera.y += this.cameraSpeed * dt;
     }
   }
@@ -62,14 +61,6 @@ class Game {
     this.ctx.restore();
   }
 
-  keyDownHandler(event) {
-    this.keyPressedState[event.code] = true;
-  }
-
-  keyUpHandler(event) {
-    this.keyPressedState[event.code] = false;
-  }
-
   mouseClickHandler(event) {
     const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
     console.log(tileX, tileY);
@@ -83,10 +74,6 @@ class Game {
       (y / this.camera.zoom + this.camera.y) / TILE_SIZE
     );
     return { tileX, tileY };
-  }
-
-  isKeyPressed(keyCode) {
-    return this.keyPressedState[keyCode] || false;
   }
 }
 

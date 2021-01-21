@@ -32,7 +32,7 @@ const ui = ReactDOM.render(
 );
 
 // kick off game loop
-const game = new Game(canvas, ctx);
+const game = new Game(canvas, ctx, store);
 
 game.load().then(() => {
   window.requestAnimationFrame(loop);
