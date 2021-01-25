@@ -67,7 +67,7 @@ func handleJoinEvent(e model.ClientEvent) {
 	// tell joiner the zone data (TODO: make this the player's zone, build player, etc)
 	zoneRes := model.ServerEvent{
 		Zone: &model.ServerZoneEvent{
-			Data: Zones["town"],
+			Data: Zones[startingZone],
 		},
 	}
 	e.Sender.In <- zoneRes

@@ -2,9 +2,14 @@ package game
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"strings"
 )
+
+const startingZone = "town"
 
 // Zone ...
 type Zone struct {
@@ -16,20 +21,37 @@ type Zone struct {
 }
 
 // Zones ...
-var Zones = map[string]Zone{
-	"town": loadZone(),
+var Zones = loadZones()
+
+func loadZones() map[string]Zone {
+	zones := map[string]Zone{}
+
+	files, err := ioutil.ReadDir("../data/zones")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		split := strings.Split(file.Name(), ".")
+		name, ext := split[0], split[1]
+		if ext == "json" {
+			zones[name] = loadZone(name)
+		}
+	}
+
+	return zones
 }
 
-func loadZone() Zone {
-	zoneFile, err := os.Open("../data/zones/town.json")
+func loadZone(name string) Zone {
+	zoneFile, err := os.Open(fmt.Sprintf("../data/zones/%s.json", name))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer zoneFile.Close()
 
 	rawData, err := ioutil.ReadAll(zoneFile)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	var zone Zone
