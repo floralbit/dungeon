@@ -7,6 +7,8 @@ type ClientEvent struct {
 	Join  *ClientJoinEvent  `json:"join,omitempty"`
 	Leave *ClientLeaveEvent `json:"leave,omitempty"`
 
+	Move *ClientMoveEvent `json:"move,omitempty"`
+
 	Sender *Client `json:"-"`
 }
 
@@ -23,4 +25,9 @@ type ClientJoinEvent struct {
 // ClientLeaveEvent ...
 type ClientLeaveEvent struct {
 	Ok bool
+}
+
+// ClientMoveEvent ...
+type ClientMoveEvent struct {
+	X, Y int
 }

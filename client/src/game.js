@@ -1,5 +1,7 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
+import Player from './player';
 import Zone from './zone';
+import {lerp} from './util';
 
 class Game {
   constructor(canvas, ctx, store) {
@@ -11,7 +13,11 @@ class Game {
       y: 0,
       zoom: 4
     };
-    this.cameraSpeed = 250;
+    this.cameraSpeed = 10;
+
+    // game data
+    this.player = null;
+    this.zone = null;
   }
 
   addStore(store) {
@@ -21,7 +27,6 @@ class Game {
   load() {
     // asset loads
     this.tilemap = new Tilemap();
-    this.zone = null;
 
     // handler registering
     this.canvas.onclick = this.mouseClickHandler.bind(this);
@@ -29,27 +34,29 @@ class Game {
     return Promise.all([this.tilemap.load()]);
   }
 
+  initPlayer(data) {
+    this.player = new Player(data, this.tilemap);
+  }
+
   changeZone(data) {
     this.zone = new Zone(data, this.tilemap);
   }
 
+  handleMove(x, y) {
+    this.player.handleMove(x, y);
+  }
+
   update(dt) {
-    const state = this.store.getState();
-
-    if (state.isTyping) {
-      return; // don't take input
-    }
-     
-    if (state.keyPressed['ArrowLeft']) {
-      this.camera.x -= this.cameraSpeed * dt;
-    } else if (state.keyPressed['ArrowRight']) {
-      this.camera.x += this.cameraSpeed * dt;
+    if (this.player) {
+      this.player.update(dt, this.store);
     }
 
-    if (state.keyPressed['ArrowUp']) {
-      this.camera.y -= this.cameraSpeed * dt;
-    } else if (state.keyPressed['ArrowDown']) {
-      this.camera.y += this.cameraSpeed * dt;
+    // center camera on player
+    if (this.player) {
+      const targetCamX = (this.player.x * TILE_SIZE) - (this.canvas.width / this.camera.zoom)/2;
+      const targetCamY = (this.player.y * TILE_SIZE) - (this.canvas.height / this.camera.zoom)/2;
+      this.camera.x = lerp(this.camera.x, targetCamX, this.cameraSpeed * dt);
+      this.camera.y = lerp(this.camera.y, targetCamY, this.cameraSpeed * dt);
     }
   }
 
@@ -67,8 +74,9 @@ class Game {
     if (this.zone) {
       this.zone.draw(this.ctx, dt);
     }
-
-    this.tilemap.drawTile(this.ctx, 21, 2, 1); // dude, temp
+    if (this.player) {
+      this.player.draw(this.ctx, dt);
+    }
 
     this.ctx.restore();
   }

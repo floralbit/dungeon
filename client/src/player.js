@@ -1,0 +1,70 @@
+import {sendMove} from './redux/actions';
+import { TILE_SIZE } from './tilemap';
+
+class Player {
+    constructor(data, tilemap) {
+        this.uuid = data.UUID;
+        this.name = data.Name;
+        this.tile = data.Tile;
+
+        this.zoneName = data.Zone;
+
+        this.x = data.X;
+        this.y = data.Y;
+
+        this.tilemap = tilemap;
+
+        this.movementTime = 0.25; // in s, TODO: populate from server
+        this.movementTimer = 0.0;
+    }
+
+    handleMove(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    update(dt, store) {
+        const state = store.getState();
+
+        if (this.movementTimer > 0) {
+            this.movementTimer -= dt;
+        }
+
+        if (state.isTyping) {
+            return; // don't take input
+        }
+    
+        const up = state.keyPressed['ArrowUp'];
+        const down = state.keyPressed['ArrowDown'];
+        const left = state.keyPressed['ArrowLeft'];
+        const right = state.keyPressed['ArrowRight'];
+
+        if (this.movementTimer <= 0) {
+            let moveX = this.x;
+            let moveY = this.y
+
+            if (up) {
+                moveY -= 1;
+            } else if (down) {
+                moveY += 1;
+            }
+    
+            if (left) {
+                moveX -= 1;
+            } else if (right) {
+                moveX += 1;
+            }
+
+            if (up || down || left || right) {
+                store.dispatch(sendMove(moveX, moveY));
+                this.movementTimer = this.movementTime;
+            }
+        }
+    }
+
+    draw(ctx, dt) {
+        this.tilemap.drawTile(ctx, this.tile, this.x, this.y);
+    }
+}
+
+export default Player;

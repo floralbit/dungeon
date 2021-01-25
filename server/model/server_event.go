@@ -4,9 +4,9 @@ package model
 type ServerEvent struct {
 	Error *ServerErrorEvent `json:"error,omitempty"`
 
-	Chat *ServerChatEvent `json:"chat,omitempty"`
-
 	Zone *ServerZoneEvent `json:"zone,omitempty"`
+	Chat *ServerChatEvent `json:"chat,omitempty"`
+	Move *ServerMoveEvent `json:"move,omitempty"`
 
 	Join  *ServerJoinEvent  `json:"join,omitempty"`
 	Leave *ServerLeaveEvent `json:"leave,omitempty"`
@@ -30,10 +30,19 @@ type ServerZoneEvent struct {
 
 // ServerJoinEvent ...
 type ServerJoinEvent struct {
-	From string // username of joining player
+	Data interface{} // data of joining player
+	From string      // username of joining player
+	You  bool        // set for joining player to know it's them
 }
 
 // ServerLeaveEvent ...
 type ServerLeaveEvent struct {
 	From string // username of leaving player
+}
+
+// ServerMoveEvent ...
+type ServerMoveEvent struct {
+	X, Y int
+	From string // username of moving player
+	You  bool
 }

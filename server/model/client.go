@@ -68,12 +68,7 @@ func (c *Client) HandleInbound() {
 		}
 
 		e.Sender = c // label sender
-
-		switch {
-		case e.Chat != nil:
-			c.Out <- e // send event to gameloop
-		}
-
+		c.Out <- e   // send event to game loop
 	}
 }
 

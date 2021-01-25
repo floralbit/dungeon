@@ -1,4 +1,4 @@
-import {NETWORK_CONNECT, SEND_CHAT, networkConnected, networkRecvMessage} from './actions';
+import {NETWORK_CONNECT, SEND_CHAT, SEND_MOVE, networkConnected, networkRecvMessage} from './actions';
 
 // we can pass game here if we want side effects
 export const networkMiddleware = (game) => {
@@ -15,8 +15,20 @@ export const networkMiddleware = (game) => {
     store.dispatch(networkRecvMessage(data));
 
     // side effects to game
+    if (data.join) {
+      if (data.join.You) {
+        game.initPlayer(data.join.Data);
+      }
+    }
+
     if (data.zone) {
-      game.changeZone(data);
+      game.changeZone(data.zone.Data);
+    }
+
+    if (data.move) {
+      if (data.move.You) {
+        game.handleMove(data.move.X, data.move.Y);
+      }
     }
   }
 
@@ -34,6 +46,12 @@ export const networkMiddleware = (game) => {
         }));
         break;
       
+      case SEND_MOVE:
+        ws.send(JSON.stringify({
+          move: {x: action.payload.x, y: action.payload.y},
+        }));
+        break;
+
       default:
         return next(action);
     }

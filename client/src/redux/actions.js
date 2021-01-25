@@ -10,6 +10,7 @@ export const SET_TYPING = 'SET_TYPING';
 
 // client side, just for middlewares
 export const SEND_CHAT = 'SEND_CHAT';
+export const SEND_MOVE = 'SEND_MOVE';
 
 export const networkConnect = () => ({
   type: NETWORK_CONNECT,
@@ -27,6 +28,11 @@ export const networkRecvMessage = data => ({
 export const sendChat = (message) => ({
   type: SEND_CHAT,
   payload: message,
+});
+
+export const sendMove = (x, y) => ({
+  type: SEND_MOVE,
+  payload: {x, y},
 });
 
 export const keyDown = (code) => ({

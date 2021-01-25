@@ -2,10 +2,10 @@ import { TILE_SIZE } from "./tilemap";
 
 class Zone {
     constructor(data, tilemap) {
-        this.width = data.zone.Data.Width;
-        this.height = data.zone.Data.Height;
+        this.width = data.Width;
+        this.height = data.Height;
 
-        const floorTiles = data.zone.Data.Layers[0].Data; // bad assumption, make a reverse map eventually
+        const floorTiles = data.Layers[0].Data; // bad assumption, make a reverse map eventually
 
         // populate tile data
         this.map = [];
