@@ -1,5 +1,5 @@
-export const GRASS_TILE = 831;
-export const TILE_SIZE = 32;
+export const GRASS_TILE = 252;
+export const TILE_SIZE = 12;
 
 export class Tilemap {
   load() {

@@ -63,6 +63,14 @@ func handleJoinEvent(e model.ClientEvent) {
 	for _, client := range model.ConnToClient {
 		client.In <- res
 	}
+
+	// tell joiner the zone data (TODO: make this the player's zone, build player, etc)
+	zoneRes := model.ServerEvent{
+		Zone: &model.ServerZoneEvent{
+			Data: Zones["town"],
+		},
+	}
+	e.Sender.In <- zoneRes
 }
 
 func handleLeaveEvent(e model.ClientEvent) {

@@ -6,6 +6,8 @@ type ServerEvent struct {
 
 	Chat *ServerChatEvent `json:"chat,omitempty"`
 
+	Zone *ServerZoneEvent `json:"zone,omitempty"`
+
 	Join  *ServerJoinEvent  `json:"join,omitempty"`
 	Leave *ServerLeaveEvent `json:"leave,omitempty"`
 }
@@ -19,6 +21,11 @@ type ServerErrorEvent struct {
 type ServerChatEvent struct {
 	Message string
 	From    string // username of sender
+}
+
+// ServerZoneEvent ...
+type ServerZoneEvent struct {
+	Data interface{}
 }
 
 // ServerJoinEvent ...

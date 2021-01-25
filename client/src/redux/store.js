@@ -4,6 +4,8 @@ import gameReducer from './reducer';
 import { networkMiddleware } from './network';
 
 // todo: pass game for action side-chain if needed
-const store = createStore(gameReducer, applyMiddleware(networkMiddleware()));
+function buildStore(game) {
+    return createStore(gameReducer, applyMiddleware(networkMiddleware(game)));
+}
 
-export default store;
+export default buildStore;

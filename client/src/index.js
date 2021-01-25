@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 
 import UI from './components/ui';
 import Game from './game';
-import store from './redux/store';
+import buildStore from './redux/store';
 import {networkConnect} from './redux/actions';
 
 // setup canvas
@@ -20,10 +20,15 @@ window.onresize = () => {
   ctx.imageSmoothingEnabled = false;
 };
 
+const game = new Game(canvas, ctx);
+
 // connect to ws via middleware
+const store = buildStore(game);
+game.addStore(store);
 store.dispatch(networkConnect());
 
 // setup UI in react
+// kick off game loop
 const ui = ReactDOM.render(
   <Provider store={store}>
     <UI />
@@ -31,8 +36,6 @@ const ui = ReactDOM.render(
   document.getElementById('ui')
 );
 
-// kick off game loop
-const game = new Game(canvas, ctx, store);
 
 game.load().then(() => {
   window.requestAnimationFrame(loop);

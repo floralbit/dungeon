@@ -1,7 +1,7 @@
 import {NETWORK_CONNECT, SEND_CHAT, networkConnected, networkRecvMessage} from './actions';
 
 // we can pass game here if we want side effects
-export const networkMiddleware = () => {
+export const networkMiddleware = (game) => {
   let ws = null;
 
   const handleOpen = store => event => {
@@ -13,6 +13,11 @@ export const networkMiddleware = () => {
     const data = JSON.parse(event.data);
     console.log(data);
     store.dispatch(networkRecvMessage(data));
+
+    // side effects to game
+    if (data.zone) {
+      game.changeZone(data);
+    }
   }
 
   return store => next => action => {

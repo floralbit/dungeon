@@ -1,31 +1,36 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
-import Terrain from './terrain';
+import Zone from './zone';
 
 class Game {
   constructor(canvas, ctx, store) {
     this.canvas = canvas;
     this.ctx = ctx;
-    this.store = store;
     
     this.camera = {
       x: 0,
       y: 0,
-      zoom: 2
+      zoom: 4
     };
     this.cameraSpeed = 250;
+  }
+
+  addStore(store) {
+    this.store = store; // this feels like a crappy hack, TODO: figure out a better way
   }
 
   load() {
     // asset loads
     this.tilemap = new Tilemap();
-
-    // todo: load map by network
-    this.currentMap = new Terrain(20, 20);
+    this.zone = null;
 
     // handler registering
     this.canvas.onclick = this.mouseClickHandler.bind(this);
 
     return Promise.all([this.tilemap.load()]);
+  }
+
+  changeZone(data) {
+    this.zone = new Zone(data, this.tilemap);
   }
 
   update(dt) {
@@ -50,8 +55,8 @@ class Game {
 
   draw(dt) {
     this.ctx.save();
-    // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = '#292929'; // grey
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // this.ctx.fillStyle = '#292929'; // grey
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
     // move camera
@@ -59,8 +64,11 @@ class Game {
     this.ctx.translate(-this.camera.x, -this.camera.y);
 
     // draw world objects
-    this.currentMap.draw(this.ctx, this.tilemap, dt);
-    this.tilemap.drawTile(this.ctx, 89, 2, 1); // dude
+    if (this.zone) {
+      this.zone.draw(this.ctx, dt);
+    }
+
+    this.tilemap.drawTile(this.ctx, 21, 2, 1); // dude, temp
 
     this.ctx.restore();
   }
