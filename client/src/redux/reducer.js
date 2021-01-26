@@ -10,6 +10,8 @@ const initialState = {
 
 export default function gameReducer(state = initialState, action) {
   switch (action.type) {
+    // TODO: re-architect this! split into own reducer also figure out if we want 
+    // to side effect all of the network junk or what should belong in redux
     case NETWORK_RECV_MESSAGE:
       const data = action.payload;
 
