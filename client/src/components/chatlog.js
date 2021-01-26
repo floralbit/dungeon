@@ -2,7 +2,7 @@ import React, { Component, useRef, useEffect, useState } from 'react';
 import {sendChat, setTyping} from '../redux/actions';
 
 function ChatLog(props) {
-  const {messages} = props;
+  const {zone, messages} = props;
 
   const messagesEndRef = useRef(null);
 
@@ -32,12 +32,13 @@ function ChatLog(props) {
       <div id="chat-log">
         <ul>
           {messages.map((message, i) => {
-              if (message.chat) {
-                return <li key={i}><span style={{color: '#00ff00'}}>{message.chat.From}</span>: {message.chat.Message}</li>;
+              if (message.entity?.chat) {
+                const name = zone.entities[message.entity.uuid].name;
+                return <li key={i}><span style={{color: '#00ff00'}}>{name}</span>: {message.entity.chat.message}</li>;
               }
 
-              if (message.join) {
-                return <li key={i} style={{color: '#ff0000'}}>{message.join.From} joined.</li>;
+              if (message.entity?.spawn) {
+                return <li key={i} style={{color: '#ff0000'}}>{message.entity.spawn.name} joined.</li>;
               }
           })}
           <div ref={messagesEndRef} />

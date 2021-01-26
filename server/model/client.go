@@ -9,16 +9,13 @@ import (
 
 const eventBufferSize = 256
 
-// ConnToClient ...
-var ConnToClient = map[*websocket.Conn]*Client{}
-
 // Client ...
 type Client struct {
 	Conn    *websocket.Conn
 	Account *store.Account
 
 	Out chan<- ClientEvent // to gameloop
-	In  chan ServerEvent   // from gameLoop
+	In  chan interface{}   // from gameLoop
 }
 
 // NewClient ...
@@ -26,10 +23,9 @@ func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent, account *store.
 	c := &Client{
 		Conn:    conn,
 		Out:     outChan,
-		In:      make(chan ServerEvent, eventBufferSize),
+		In:      make(chan interface{}, eventBufferSize),
 		Account: account,
 	}
-	ConnToClient[conn] = c
 
 	// notify join
 	outChan <- ClientEvent{
@@ -45,7 +41,6 @@ func NewClient(conn *websocket.Conn, outChan chan<- ClientEvent, account *store.
 // Close ...
 func (c *Client) Close() {
 	c.Conn.Close()
-	delete(ConnToClient, c.Conn)
 
 	// let game know they've bailed
 	c.Out <- ClientEvent{
@@ -74,6 +69,19 @@ func (c *Client) HandleInbound() {
 
 // HandleOutbound runs in its own goroutine too
 func (c *Client) HandleOutbound() {
+	// tell client they've joined successfully
+	connectEvent := ServerEvent{
+		Connect: &ServerConnectEvent{
+			UUID: c.Account.UUID,
+		},
+	}
+	err := c.Conn.WriteJSON(connectEvent)
+	if err != nil {
+		log.Printf("error: %v", err)
+		c.Close()
+		return
+	}
+
 	for e := range c.In {
 		err := c.Conn.WriteJSON(e)
 		if err != nil {

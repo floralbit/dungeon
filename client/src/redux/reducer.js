@@ -1,6 +1,8 @@
 import {NETWORK_RECV_MESSAGE, KEY_DOWN, KEY_UP, SET_TYPING} from './actions';
 
 const initialState = {
+  accountUUID: null,
+  zone: null,
   messages: [],
   keyPressed: {},
   isTyping: false,
@@ -10,6 +12,21 @@ export default function gameReducer(state = initialState, action) {
   switch (action.type) {
     case NETWORK_RECV_MESSAGE:
       const data = action.payload;
+
+      if (data.connect) {
+        return {
+          ...state,
+          accountUUID: data.connect.uuid,
+        }
+      }
+
+      if (data.zone && data.zone.load) {
+        return {
+          ...state,
+          zone: data.zone.load,
+        }
+      }
+
       return {
         ...state,
         messages: [

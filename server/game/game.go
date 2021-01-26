@@ -55,94 +55,29 @@ func update(dt float64) {
 }
 
 func handleJoinEvent(e model.ClientEvent) {
-	// TODO: load from storage if exists
-	player := newPlayer(e.Sender.Account.UUID, e.Sender.Account.Username)
-	res := model.ServerEvent{
-		Join: &model.ServerJoinEvent{
-			Data: *player,
-			From: e.Sender.Account.Username,
-		},
-	}
-
-	// for now just pass to all clients
-	for _, client := range model.ConnToClient {
-		if client.Account.UUID != e.Sender.Account.UUID {
-			client.In <- res
-		}
-	}
-
-	// tell joiner they joined
-	selfJoinRes := model.ServerEvent{
-		Join: &model.ServerJoinEvent{
-			Data: *player,
-			From: e.Sender.Account.Username,
-			You:  true,
-		},
-	}
-	e.Sender.In <- selfJoinRes
-
-	// tell joiner the zone data
-	zoneRes := model.ServerEvent{
-		Zone: &model.ServerZoneEvent{
-			Data: Zones[player.Zone],
-		},
-	}
-	e.Sender.In <- zoneRes
+	p := newPlayer(e.Sender) // TODO: pull from storage
+	// TODO: dispatch to zone add entity method
+	zones[startingZoneUUID].Entities[p.UUID] = p // add player to starting zone
+	p.zone = zones[startingZoneUUID]
+	zones[startingZoneUUID].send(newSpawnEvent(p)) // notify zone player has joined
+	p.send(newZoneLoadEvent(p.zone)) // send player zone data
 }
 
 func handleLeaveEvent(e model.ClientEvent) {
-	// TODO: save to storage
-	delete(ActivePlayers, e.Sender.Account.UUID)
-
-	res := model.ServerEvent{
-		Leave: &model.ServerLeaveEvent{
-			From: e.Sender.Account.Username,
-		},
-	}
-
-	// for now just pass to all clients
-	for _, client := range model.ConnToClient {
-		client.In <- res
-	}
+	p := activePlayers[e.Sender.Account.UUID]
+	// TODO: dispatch to zone remove entity method
+	delete(p.zone.Entities, p.UUID)
+	delete(activePlayers, p.UUID)
+	p.zone.send(newDespawnEvent(p))
 }
 
 func handleChatEvent(e model.ClientEvent) {
-	res := model.ServerEvent{
-		Chat: &model.ServerChatEvent{
-			Message: e.Chat.Message,
-			From:    e.Sender.Account.Username,
-		},
-	}
-
-	// for now just pass to all clients
-	for _, client := range model.ConnToClient {
-		client.In <- res
-	}
+	p := activePlayers[e.Sender.Account.UUID]
+	p.zone.send(newChatEvent(p, e.Chat.Message))
 }
 
 func handleMoveEvent(e model.ClientEvent) {
-	// TODO: populate with UUIDs instead of username for lookup
-	res := model.ServerEvent{
-		Move: &model.ServerMoveEvent{
-			X:    e.Move.X,
-			Y:    e.Move.Y,
-			From: e.Sender.Account.Username,
-		},
-	}
-
-	for _, client := range model.ConnToClient {
-		if client.Account.UUID != e.Sender.Account.UUID {
-			client.In <- res
-		}
-	}
-
-	senderRes := model.ServerEvent{
-		Move: &model.ServerMoveEvent{
-			X:    e.Move.X,
-			Y:    e.Move.Y,
-			From: e.Sender.Account.Username,
-			You:  true,
-		},
-	}
-	e.Sender.In <- senderRes
+	// TODO: pass to zone to handle for collision detection
+	p := activePlayers[e.Sender.Account.UUID]
+	p.zone.send(newMoveEvent(p, e.Move.X, e.Move.Y))
 }

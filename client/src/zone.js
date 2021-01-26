@@ -2,17 +2,17 @@ import { TILE_SIZE } from "./tilemap";
 
 class Zone {
     constructor(data, tilemap) {
-        this.width = data.Width;
-        this.height = data.Height;
-
-        const floorTiles = data.Layers[0].Data; // bad assumption, make a reverse map eventually
+        this.width = data.width;
+        this.width = data.width;
+        this.height = data.height;
 
         // populate tile data
         this.map = [];
         for (let x = 0; x < this.width; x++) {
             this.map.push([]);
             for (let y = 0; y < this.height; y++) {
-                this.map[x][y] = floorTiles[(y * this.width) + x] - 1; // TODO: figure out off by one, for now IDGAF
+                const t = data.tiles[(y * this.width) + x];
+                this.map[x][y] = t.id - 1; // TODO: figure out off by one, for now IDGAF
             }
         }
 

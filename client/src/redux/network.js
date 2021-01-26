@@ -10,25 +10,26 @@ export const networkMiddleware = (game) => {
   }
 
   const handleMessage = store => event => {
+    const state = store.getState();
+
     const data = JSON.parse(event.data);
     console.log(data);
     store.dispatch(networkRecvMessage(data));
 
     // side effects to game
-    if (data.join) {
-      if (data.join.You) {
-        game.initPlayer(data.join.Data);
+    if (data.entity) {
+      if (data.entity.uuid === state.accountUUID) {
+        if (data.entity.spawn) {
+          game.initPlayer((data.entity.spawn));
+        }
+        if (data.entity.move) {
+          game.handleMove(data.entity.move.x, data.entity.move.y);
+        }
       }
     }
 
     if (data.zone) {
-      game.changeZone(data.zone.Data);
-    }
-
-    if (data.move) {
-      if (data.move.You) {
-        game.handleMove(data.move.X, data.move.Y);
-      }
+      game.changeZone(data.zone.load);
     }
   }
 

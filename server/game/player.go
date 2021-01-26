@@ -1,32 +1,51 @@
 package game
 
-import "github.com/google/uuid"
+import (
+	"github.com/floralbit/dungeon/model"
+	"github.com/google/uuid"
+)
 
-const warriorTile = 21
+const warriorTileId = 21
 
-// Player ...
-type Player struct {
-	UUID uuid.UUID
-	Name string
-	Tile int
+var activePlayers = map[uuid.UUID]*entity{}
 
-	X, Y int
-	Zone string
-}
+func newPlayer(client *model.Client) *entity {
+	p := entity{
+		UUID: client.Account.UUID,
+		Name: client.Account.Username,
+		Tile: warriorTileId,
+		Type: entityTypePlayer,
 
-// ActivePlayers ...
-var ActivePlayers = map[uuid.UUID]*Player{}
+		X: 24, Y: 18, // TODO: pull spawn from map data
 
-func newPlayer(UUID uuid.UUID, name string) *Player {
-	p := Player{
-		UUID: UUID,
-		Name: name,
-		Tile: warriorTile,
-
-		X:    24, // TODO: pull spawn from map data
-		Y:    18,
-		Zone: startingZone,
+		client: client,
 	}
-	ActivePlayers[UUID] = &p
+	activePlayers[p.UUID] = &p
 	return &p
 }
+
+//// Player ...
+//type Player struct {
+//	UUID uuid.UUID
+//	Name string
+//	Tile int
+//
+//	X, Y int
+//	Zone string
+//}
+//
+//// ActivePlayers ...
+//var ActivePlayers = map[uuid.UUID]*Player{}
+//
+//func newPlayer(UUID uuid.UUID, name string) *Player {
+//	p := Player{
+//		UUID: UUID,
+//		Name: name,
+//		Tile: warriorTile,
+//
+//		X:    24, // TODO: pull spawn from map data
+//		Y:    18,
+//	}
+//	ActivePlayers[UUID] = &p
+//	return &p
+//}

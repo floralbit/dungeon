@@ -3,14 +3,12 @@ import { TILE_SIZE } from './tilemap';
 
 class Player {
     constructor(data, tilemap) {
-        this.uuid = data.UUID;
-        this.name = data.Name;
-        this.tile = data.Tile;
+        this.uuid = data.uuid;
+        this.name = data.name;
+        this.tile = data.tile;
 
-        this.zoneName = data.Zone;
-
-        this.x = data.X;
-        this.y = data.Y;
+        this.x = data.x;
+        this.y = data.y;
 
         this.tilemap = tilemap;
 
