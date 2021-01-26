@@ -56,19 +56,11 @@ func update(dt float64) {
 
 func handleJoinEvent(e model.ClientEvent) {
 	p := newPlayer(e.Sender) // TODO: pull from storage
-	// TODO: dispatch to zone add entity method
-	zones[startingZoneUUID].Entities[p.UUID] = p // add player to starting zone
-	p.zone = zones[startingZoneUUID]
-	zones[startingZoneUUID].send(newSpawnEvent(p)) // notify zone player has joined
-	p.send(newZoneLoadEvent(p.zone)) // send player zone data
+	zones[startingZoneUUID].addEntity(p)
 }
 
 func handleLeaveEvent(e model.ClientEvent) {
-	p := activePlayers[e.Sender.Account.UUID]
-	// TODO: dispatch to zone remove entity method
-	delete(p.zone.Entities, p.UUID)
-	delete(activePlayers, p.UUID)
-	p.zone.send(newDespawnEvent(p))
+	activePlayers[e.Sender.Account.UUID].leave()
 }
 
 func handleChatEvent(e model.ClientEvent) {

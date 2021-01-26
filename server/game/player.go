@@ -24,28 +24,9 @@ func newPlayer(client *model.Client) *entity {
 	return &p
 }
 
-//// Player ...
-//type Player struct {
-//	UUID uuid.UUID
-//	Name string
-//	Tile int
-//
-//	X, Y int
-//	Zone string
-//}
-//
-//// ActivePlayers ...
-//var ActivePlayers = map[uuid.UUID]*Player{}
-//
-//func newPlayer(UUID uuid.UUID, name string) *Player {
-//	p := Player{
-//		UUID: UUID,
-//		Name: name,
-//		Tile: warriorTile,
-//
-//		X:    24, // TODO: pull spawn from map data
-//		Y:    18,
-//	}
-//	ActivePlayers[UUID] = &p
-//	return &p
-//}
+func (e *entity) leave() {
+	e.zone.removeEntity(e)
+	if e.Type == entityTypePlayer {
+		delete(activePlayers, e.UUID)
+	}
+}

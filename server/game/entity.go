@@ -24,22 +24,6 @@ type entity struct {
 	client *model.Client `json:"-"`
 }
 
-type tile struct {
-	ID int `json:"id"`
-	Solid bool `json:"solid"`
-}
-
-type zone struct {
-	UUID uuid.UUID `json:"uuid"`
-	Name string `json:"name"`
-	Width int `json:"width"`
-	Height int `json:"height"`
-	Tiles []tile `json:"tiles"`
-
-	Entities map[uuid.UUID]*entity `json:"entities"`
-	WorldObjects map[uuid.UUID]*worldObject `json:"world_objects"`
-}
-
 type worldObject struct {
 	UUID uuid.UUID `json:"uuiud"`
 	Name string `json:"name"`
