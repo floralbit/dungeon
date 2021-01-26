@@ -12,7 +12,7 @@ class Zone {
             this.map.push([]);
             for (let y = 0; y < this.height; y++) {
                 const t = data.tiles[(y * this.width) + x];
-                this.map[x][y] = t.id - 1; // TODO: figure out off by one, for now IDGAF
+                this.map[x][y] = t.id;
             }
         }
 

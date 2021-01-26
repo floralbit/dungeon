@@ -12,22 +12,27 @@ const (
 )
 
 type entity struct {
-	UUID uuid.UUID `json:"uuid"`
-	Name string `json:"name"`
-	Tile int `json:"tile"` // representing tile
+	UUID uuid.UUID  `json:"uuid"`
+	Name string     `json:"name"`
+	Tile int        `json:"tile"` // representing tile
 	Type entityType `json:"type"`
 
 	X int `json:"x"`
 	Y int `json:"y"`
 
-	zone *zone `json:"-"`
+	zone   *zone         `json:"-"`
 	client *model.Client `json:"-"`
 }
 
-type worldObject struct {
-	UUID uuid.UUID `json:"uuiud"`
-	Name string `json:"name"`
-	Tile int `json:"tile"` // representing tile
-	X int `json:"int"`
-	Y int `json:"int"`
+func (e *entity) move(x, y int) {
+	t := e.zone.getTile(x, y)
+	if t == nil {
+		return // edge of map, don't move
+	}
+
+	if t.Solid {
+		return
+	}
+
+	e.zone.send(newMoveEvent(e, x, y))
 }

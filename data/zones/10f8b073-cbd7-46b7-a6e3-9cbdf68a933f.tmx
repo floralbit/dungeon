@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="12" tileheight="12" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="12" tileheight="12" infinite="0" nextlayerid="2" nextobjectid="1">
  <editorsettings>
   <export target="town.json" format="json"/>
  </editorsettings>
+ <properties>
+  <property name="name" value="town"/>
+ </properties>
  <tileset firstgid="1" source="../tileset.tsx"/>
  <layer id="1" name="ground" width="50" height="50">
   <data encoding="csv">
