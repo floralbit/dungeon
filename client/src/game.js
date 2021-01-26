@@ -2,6 +2,7 @@ import Tilemap, {TILE_SIZE} from './tilemap';
 import Player from './player';
 import Zone from './zone';
 import {lerp} from './util';
+import {drawEntities} from './entity';
 
 class Game {
   constructor(canvas, ctx, store) {
@@ -61,6 +62,8 @@ class Game {
   }
 
   draw(dt) {
+    const state = this.store.getState();
+
     this.ctx.save();
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // this.ctx.fillStyle = '#292929'; // grey
@@ -73,7 +76,9 @@ class Game {
     // draw world objects
     if (this.zone) {
       this.zone.draw(this.ctx, dt);
+      drawEntities(this.ctx, state.zone.entities, this.tilemap, state.accountUUID, dt);
     }
+
     if (this.player) {
       this.player.draw(this.ctx, dt);
     }

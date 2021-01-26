@@ -34,5 +34,8 @@ func (e *entity) move(x, y int) {
 		return
 	}
 
+	e.X = x
+	e.Y = y
+
 	e.zone.send(newMoveEvent(e, x, y))
 }

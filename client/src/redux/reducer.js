@@ -27,6 +27,49 @@ export default function gameReducer(state = initialState, action) {
         }
       }
 
+      if (data.entity && data.entity.spawn && state.zone) {
+        return {
+          ...state,
+          zone: {
+            ...state.zone,
+            entities: {
+              ...state.zone.entities,
+              [data.entity.uuid]: data.entity.spawn,
+            }
+          }
+        }
+      }
+
+      if (data.entity && data.entity.despawn && state.zone) {
+        const {[data.entity.uuid]: value, ...withoutEntity} = state.zone.entities;
+        return {
+          ...state,
+          zone: {
+            ...state.zone,
+            entities: {
+              ...withoutEntity
+            }
+          }
+        }
+      }
+
+      if (data.entity && data.entity.move) {
+        return {
+          ...state,
+          zone: {
+            ...state.zone,
+            entities: {
+              ...state.zone.entities,
+              [data.entity.uuid]: {
+                ...state.zone.entities[data.entity.uuid],
+                x: data.entity.move.x,
+                y: data.entity.move.y,
+              }
+            }
+          }
+        }
+      }
+
       return {
         ...state,
         messages: [
