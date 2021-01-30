@@ -2,7 +2,7 @@ import React, { Component, useRef, useEffect, useState } from 'react';
 import {sendChat, setTyping} from '../redux/actions';
 
 function ChatLog(props) {
-  const {zone, messages} = props;
+  const {game: {zone, messages}} = props;
 
   const messagesEndRef = useRef(null);
 

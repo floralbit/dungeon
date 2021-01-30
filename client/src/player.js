@@ -28,14 +28,14 @@ class Player {
             this.movementTimer -= dt;
         }
 
-        if (state.isTyping) {
+        if (state.ui.isTyping) {
             return; // don't take input
         }
     
-        const up = state.keyPressed['ArrowUp'];
-        const down = state.keyPressed['ArrowDown'];
-        const left = state.keyPressed['ArrowLeft'];
-        const right = state.keyPressed['ArrowRight'];
+        const up = state.ui.keyPressed['ArrowUp'];
+        const down = state.ui.keyPressed['ArrowDown'];
+        const left = state.ui.keyPressed['ArrowLeft'];
+        const right = state.ui.keyPressed['ArrowRight'];
 
         if (this.movementTimer <= 0) {
             let moveX = this.x;

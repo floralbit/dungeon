@@ -76,7 +76,7 @@ class Game {
     // draw world objects
     if (this.zone) {
       this.zone.draw(this.ctx, dt);
-      drawEntities(this.ctx, state.zone.entities, this.tilemap, state.accountUUID, dt);
+      drawEntities(this.ctx, state.game.zone.entities, this.tilemap, state.game.accountUUID, dt);
     }
 
     if (this.player) {
