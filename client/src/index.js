@@ -20,12 +20,10 @@ window.onresize = () => {
   ctx.imageSmoothingEnabled = false;
 };
 
-const game = new Game(canvas, ctx);
+const store = buildStore();
+const game = new Game(canvas, ctx, store);
 
-// connect to ws via middleware
-const store = buildStore(game);
-game.addStore(store);
-store.dispatch(networkConnect());
+store.dispatch(networkConnect()); // connect to ws via middleware
 
 // setup UI in react
 // kick off game loop

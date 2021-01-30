@@ -1,105 +1,137 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
-import Player from './player';
-import Zone from './zone';
 import {lerp} from './util';
-import {drawEntities} from './entity';
+import {sendMove} from './redux/actions';
 
 class Game {
-  constructor(canvas, ctx, store) {
-    this.canvas = canvas;
-    this.ctx = ctx;
+    constructor(canvas, ctx, store) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.store = store;
+        
+        this.camera = {
+            x: 0, y:0,
+            zoom: 4,
+        };
+        this.cameraSpeed = 10;
+
+        this.renderedZoneUUID = undefined;
+        this.zoneCanvas = document.createElement('canvas');
+
+        this.movementTimer = 0.0;
+        this.movementTime = 0.25; // in s, TODO: populate from server
+    }
+
+    load() {
+        this.tilemap = new Tilemap();
+        this.canvas.onclick = this.mouseClickHandler.bind(this);
+        return Promise.all([this.tilemap.load()]);
+    }
+
+    update(dt) {
+        const {game, ui} = this.store.getState();
+
+        // do player actions
+        if (game.zone?.entities) {
+            if (game.accountUUID in game.zone.entities) {
+                const player = game.zone.entities[game.accountUUID];
+
+                // center camera on player
+                const targetCamX = (player.x * TILE_SIZE) - (this.canvas.width / this.camera.zoom)/2;
+                const targetCamY = (player.y * TILE_SIZE) - (this.canvas.height / this.camera.zoom)/2;
+                this.camera.x = lerp(this.camera.x, targetCamX, this.cameraSpeed * dt);
+                this.camera.y = lerp(this.camera.y, targetCamY, this.cameraSpeed * dt);
+
+                // handle movement
+                if (this.movementTimer > 0) {
+                    this.movementTimer -= dt;
+                }
+        
+                if (ui.isTyping) {
+                    return; // don't handle input
+                }
+        
+                const up = ui.keyPressed['ArrowUp'];
+                const down = ui.keyPressed['ArrowDown'];
+                const left = ui.keyPressed['ArrowLeft'];
+                const right = ui.keyPressed['ArrowRight'];
+        
+                if (this.movementTimer <= 0) {
+                    let moveX = player.x;
+                    let moveY = player.y;
+
+                    if (up) {
+                        moveY -= 1;
+                    } else if (down) {
+                        moveY += 1;
+                    }
+            
+                    if (left) {
+                        moveX -= 1;
+                    } else if (right) {
+                        moveX += 1;
+                    }
+
+                    if (up || down || left || right) {
+                        this.store.dispatch(sendMove(moveX, moveY));
+                        this.movementTimer = this.movementTime;
+                    }
+                }
+            }
+        }
+    }
+
+    draw(dt) {
+        const {game, ui} = this.store.getState();
+
+        if (game.zone?.uuid !== this.renderedZoneUUID) {
+            this.renderedZoneUUID = game.zone.uuid;
+            this.drawZone(game.zone);
+        }
+
+        this.ctx.save();
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.ctx.scale(this.camera.zoom, this.camera.zoom);
+        this.ctx.translate(-this.camera.x, -this.camera.y);
+
+        if (game.zone) {
+            this.ctx.drawImage(this.zoneCanvas, 0, 0);
+            for (let entityUUID in game.zone.entities) {
+                const entity = game.zone.entities[entityUUID];
+                this.tilemap.drawTile(this.ctx, entity.tile, entity.x, entity.y);
+            }
+        }
+
+        this.ctx.restore();
+    }
+
+    drawZone(zone) {
+        this.zoneCanvas.width = zone.width * TILE_SIZE;
+        this.zoneCanvas.height = zone.height * TILE_SIZE;
+        const ctx = this.zoneCanvas.getContext('2d');
+        for (let x = 0; x < zone.width; x++) {
+            for (let y = 0; y < zone.height; y++) {
+                const tile = zone.tiles[(y * zone.width) + x];
+                this.tilemap.drawTile(ctx, tile.id, x, y);
+            }
+        }
+    }
+
+    mouseClickHandler(event) {
+        const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
+        console.log(tileX, tileY);
+      }
     
-    this.camera = {
-      x: 0,
-      y: 0,
-      zoom: 4
-    };
-    this.cameraSpeed = 10;
-
-    // game data
-    this.player = null;
-    this.zone = null;
-  }
-
-  addStore(store) {
-    this.store = store; // this feels like a crappy hack, TODO: figure out a better way
-  }
-
-  load() {
-    // asset loads
-    this.tilemap = new Tilemap();
-
-    // handler registering
-    this.canvas.onclick = this.mouseClickHandler.bind(this);
-
-    return Promise.all([this.tilemap.load()]);
-  }
-
-  initPlayer(data) {
-    this.player = new Player(data, this.tilemap);
-  }
-
-  changeZone(data) {
-    this.zone = new Zone(data, this.tilemap);
-  }
-
-  handleMove(x, y) {
-    this.player.handleMove(x, y);
-  }
-
-  update(dt) {
-    if (this.player) {
-      this.player.update(dt, this.store);
-    }
-
-    // center camera on player
-    if (this.player) {
-      const targetCamX = (this.player.x * TILE_SIZE) - (this.canvas.width / this.camera.zoom)/2;
-      const targetCamY = (this.player.y * TILE_SIZE) - (this.canvas.height / this.camera.zoom)/2;
-      this.camera.x = lerp(this.camera.x, targetCamX, this.cameraSpeed * dt);
-      this.camera.y = lerp(this.camera.y, targetCamY, this.cameraSpeed * dt);
-    }
-  }
-
-  draw(dt) {
-    const state = this.store.getState();
-
-    this.ctx.save();
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    // this.ctx.fillStyle = '#292929'; // grey
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-
-    // move camera
-    this.ctx.scale(this.camera.zoom, this.camera.zoom);
-    this.ctx.translate(-this.camera.x, -this.camera.y);
-
-    // draw world objects
-    if (this.zone) {
-      this.zone.draw(this.ctx, dt);
-      drawEntities(this.ctx, state.game.zone.entities, this.tilemap, state.game.accountUUID, dt);
-    }
-
-    if (this.player) {
-      this.player.draw(this.ctx, dt);
-    }
-
-    this.ctx.restore();
-  }
-
-  mouseClickHandler(event) {
-    const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
-    console.log(tileX, tileY);
-  }
-
-  canvasToWorldCoordinates(x, y) {
-    const tileX = Math.floor(
-      (x / this.camera.zoom + this.camera.x) / TILE_SIZE
-    );
-    const tileY = Math.floor(
-      (y / this.camera.zoom + this.camera.y) / TILE_SIZE
-    );
-    return { tileX, tileY };
-  }
+      canvasToWorldCoordinates(x, y) {
+        const tileX = Math.floor(
+          (x / this.camera.zoom + this.camera.x) / TILE_SIZE
+        );
+        const tileY = Math.floor(
+          (y / this.camera.zoom + this.camera.y) / TILE_SIZE
+        );
+        return { tileX, tileY };
+      }
 }
 
 export default Game;
