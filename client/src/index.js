@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 
 import UI from './components/ui';
-import Game from './game';
+import Game from './game/game';
 import buildStore from './redux/store';
 import {networkConnect} from './redux/actions';
 

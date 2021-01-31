@@ -1,6 +1,6 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
 import {lerp} from './util';
-import {sendMove} from './redux/actions';
+import {sendMove} from '../redux/actions';
 
 class Game {
     constructor(canvas, ctx, store) {
