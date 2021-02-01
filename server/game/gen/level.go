@@ -3,7 +3,6 @@ package gen
 import (
 	"fmt"
 	"image"
-	"image/color"
 	"image/png"
 	"log"
 	"math/rand"
@@ -60,6 +59,9 @@ func BuildLevel() (*Level, error) {
 
 	log.Println("removing superfluous walls")
 	l.removeSuperfluousWalls()
+
+	log.Println("placing doors")
+	l.placeDoors()
 
 	l.saveImage("dungeon")
 
@@ -137,6 +139,28 @@ func (l *Level) removeSuperfluousWalls() {
 	}
 }
 
+func (l *Level) placeDoors() {
+	doors := map[*Tile]bool{}
+
+	for x := 0; x < l.Width; x++ {
+		for y := 0; y < l.Height; y++ {
+			t := l.Tiles[x][y]
+			if t.Type == TileTypeHall {
+				neighbors := l.neighbors(x, y)
+				for _, n := range neighbors {
+					if n.Type == TileTypeGround {
+						doors[t] = true
+					}
+				}
+			}
+		}
+	}
+
+	for t := range doors {
+		t.Type = TileTypeDoor
+	}
+}
+
 // for debugging
 func (l *Level) saveImage(name string) error {
 	f, err := os.Create(fmt.Sprintf("../data/textures/out/%s.png", name))
@@ -149,13 +173,7 @@ func (l *Level) saveImage(name string) error {
 	for x := 0; x < l.Width; x++ {
 		for y := 0; y < l.Height; y++ {
 			t := l.Tiles[x][y]
-			if t.Type == TileTypeGround {
-				outImg.Set(x, y, color.White)
-			} else if t.Type == TileTypeWall {
-				outImg.Set(x, y, color.Black)
-			} else if t.Type == TileTypeHall {
-				outImg.Set(x, y, color.RGBA{128, 128, 128, 255})
-			}
+			outImg.Set(x, y, tileTypeToColor[t.Type])
 		}
 	}
 

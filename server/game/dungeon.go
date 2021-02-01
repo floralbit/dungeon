@@ -16,6 +16,7 @@ var genTileTypeToTileID = map[gen.TileType][]int{
 	gen.TileTypeGround: {243, 244, 245, 246},
 	gen.TileTypeHall:   {247},
 	gen.TileTypeAir:    {216},
+	gen.TileTypeDoor:   {224, 225, 230},
 }
 
 func buildDungeonFloor() *zone {

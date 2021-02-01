@@ -14,6 +14,8 @@ const (
 	TileTypeHall
 	// TileTypeAir ...
 	TileTypeAir
+	// TileTypeDoor ..
+	TileTypeDoor
 )
 
 // Tile ...
@@ -28,8 +30,9 @@ type Tile struct {
 var tileTypeToColor = map[TileType]color.Color{
 	TileTypeWall:   color.Black,
 	TileTypeGround: color.White,
-	TileTypeHall:   color.RGBA{128, 128, 128, 255},
+	TileTypeHall:   color.RGBA{240, 240, 240, 255},
 	TileTypeAir:    color.RGBA{255, 255, 255, 0},
+	TileTypeDoor:   color.RGBA{255, 205, 201, 255},
 }
 
 func (l *Level) inBounds(x, y int) bool {
