@@ -55,11 +55,11 @@ func update(dt float64) {
 }
 
 func handleJoinEvent(e model.ClientEvent) {
-	p := newPlayer(e.Sender) // TODO: pull from storage
-	x, y := zones[dungeonFloor1UUID].findPlayerSpawn()
+	p := newPlayer(e.Sender)                          // TODO: pull from storage
+	x, y := zones[startingZoneUUID].findPlayerSpawn() // TODO: handle somewhere else
 	p.X = x
 	p.Y = y
-	zones[dungeonFloor1UUID].addEntity(p)
+	zones[startingZoneUUID].addEntity(p)
 }
 
 func handleLeaveEvent(e model.ClientEvent) {

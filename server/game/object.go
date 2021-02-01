@@ -4,6 +4,9 @@ import (
 	"github.com/google/uuid"
 )
 
+var overworldSpawnObjectUUID = uuid.MustParse("b4f195f7-644a-4791-8177-c9eb69b10e9e")
+var dungeonEntranceObjectUUID = uuid.MustParse("85ab1aaf-fcb2-4fa2-80e0-3cf54f8cad41")
+
 type worldObject struct {
 	UUID uuid.UUID `json:"uuiud"`
 	Name string    `json:"name"`
@@ -20,6 +23,7 @@ type worldObjectType string
 
 const (
 	worldObjectTypePlayerSpawn = "playerSpawn"
+	worldObjectTypePortal      = "portal"
 )
 
 type warpTarget struct {

@@ -18,6 +18,7 @@ const (
 
 	torchLikelihood    = .05 // 5%
 	entranceLikelihood = .05 // 5%
+	exitLikelihood     = .05 // 5%
 )
 
 // Level ...
@@ -65,6 +66,7 @@ func BuildLevel() (*Level, error) {
 	l.placeDoors()
 	l.placeTorches()
 	l.placeEntrance()
+	l.placeExit()
 
 	l.saveImage("dungeon")
 
@@ -195,6 +197,19 @@ func (l *Level) placeEntrance() {
 			for y := 0; y < l.Height; y++ {
 				if l.freeSpace(x, y) && rand.Float32() < entranceLikelihood {
 					l.Tiles[x][y].Type = TileTypeEntrance
+					return
+				}
+			}
+		}
+	}
+}
+
+func (l *Level) placeExit() {
+	for {
+		for x := l.Width - 1; x >= 0; x-- {
+			for y := l.Height - 1; y >= 0; y-- {
+				if l.freeSpace(x, y) && rand.Float32() < exitLikelihood {
+					l.Tiles[x][y].Type = TileTypeExit
 					return
 				}
 			}

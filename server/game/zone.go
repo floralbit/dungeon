@@ -32,6 +32,18 @@ func (z *zone) getTile(x, y int) *tile {
 	return &z.Tiles[index]
 }
 
+func (z *zone) getWorldObjects(x, y int) []*worldObject {
+	objs := []*worldObject{}
+
+	for _, obj := range z.WorldObjects {
+		if obj.X == x && obj.Y == y {
+			objs = append(objs, obj)
+		}
+	}
+
+	return objs
+}
+
 func (z *zone) addEntity(e *entity) {
 	z.Entities[e.UUID] = e
 	e.zone = z

@@ -77,6 +77,32 @@ func loadZones() map[uuid.UUID]*zone {
 		}
 	}
 
+	// TODO: handle on tiled side
+	// drop player spawn down for overworld
+	zones[startingZoneUUID].WorldObjects[overworldSpawnObjectUUID] = &worldObject{
+		UUID: overworldSpawnObjectUUID,
+		Name: "spawn",
+		Tile: 189,
+		X:    24,
+		Y:    18,
+		Type: worldObjectTypePlayerSpawn,
+	}
+
+	// add dungeon enterence
+	zones[startingZoneUUID].WorldObjects[dungeonEntranceObjectUUID] = &worldObject{
+		UUID: dungeonEntranceObjectUUID,
+		Name: "dungeon entrance",
+		Tile: 84,
+		X:    33,
+		Y:    13,
+		Type: worldObjectTypePortal,
+		WarpTarget: &warpTarget{
+			ZoneUUID: dungeonFloor1UUID,
+			X:        0,
+			Y:        0,
+		},
+	}
+
 	return zones
 }
 

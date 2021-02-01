@@ -20,6 +20,8 @@ const (
 	TileTypeTorch
 	// TileTypeEntrance ...
 	TileTypeEntrance
+	// TileTypeExit ...
+	TileTypeExit
 )
 
 // Tile ...
@@ -39,6 +41,7 @@ var tileTypeToColor = map[TileType]color.Color{
 	TileTypeDoor:     color.RGBA{255, 205, 201, 255},
 	TileTypeTorch:    color.RGBA{255, 136, 0, 255},
 	TileTypeEntrance: color.RGBA{0, 0, 255, 255},
+	TileTypeExit:     color.RGBA{0, 255, 0, 255},
 }
 
 func (l *Level) inBounds(x, y int) bool {

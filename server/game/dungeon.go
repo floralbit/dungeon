@@ -19,6 +19,7 @@ var genTileTypeToTileID = map[gen.TileType][]int{
 	gen.TileTypeDoor:     {224, 225, 230},
 	gen.TileTypeTorch:    {409},
 	gen.TileTypeEntrance: {211},
+	gen.TileTypeExit:     {210},
 }
 
 func buildDungeonFloor() *zone {
@@ -48,16 +49,22 @@ func buildDungeonFloor() *zone {
 				entranceUUID := uuid.New()
 				z.WorldObjects[entranceUUID] = &worldObject{
 					UUID: entranceUUID,
-					Name: "exit",
+					Name: "dungeon exit",
 					Tile: tileID,
 					X:    x,
 					Y:    y,
-					Type: worldObjectTypePlayerSpawn,
+					Type: worldObjectTypePortal,
 					WarpTarget: &warpTarget{
 						ZoneUUID: startingZoneUUID, // TODO: when multi-layer dungeon, assign to last layer
 						X:        33,
 						Y:        13,
 					},
+				}
+				// tie overworld entrance to stairs
+				zones[startingZoneUUID].WorldObjects[dungeonEntranceObjectUUID].WarpTarget = &warpTarget{
+					ZoneUUID: dungeonFloor1UUID,
+					X:        x,
+					Y:        y,
 				}
 				z.Tiles = append(z.Tiles, tiles[216]) // just add air for now, TODO: figure out better solution here
 			} else {

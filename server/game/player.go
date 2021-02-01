@@ -16,8 +16,6 @@ func newPlayer(client *model.Client) *entity {
 		Tile: warriorTileID,
 		Type: entityTypePlayer,
 
-		X: 24, Y: 18, // TODO: pull spawn from map data
-
 		client: client,
 	}
 	rollPlayerStats(&p)

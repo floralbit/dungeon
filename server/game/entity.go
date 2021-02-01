@@ -48,6 +48,17 @@ func (e *entity) move(x, y int) {
 		return
 	}
 
+	objs := e.zone.getWorldObjects(x, y)
+	for _, obj := range objs {
+		if obj.WarpTarget != nil {
+			e.zone.removeEntity(e)
+			zones[obj.WarpTarget.ZoneUUID].addEntity(e)
+			e.X = obj.WarpTarget.X
+			e.Y = obj.WarpTarget.Y
+			return
+		}
+	}
+
 	e.X = x
 	e.Y = y
 
