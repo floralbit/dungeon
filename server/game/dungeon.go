@@ -51,7 +51,7 @@ func buildDungeonFloor() *zone {
 				entranceUUID := uuid.New()
 				z.WorldObjects[entranceUUID] = &worldObject{
 					UUID: entranceUUID,
-					Name: "dungeon exit",
+					Name: "Dungeon Exit",
 					Tile: tileID,
 					X:    x,
 					Y:    y,

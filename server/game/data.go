@@ -34,6 +34,20 @@ type rawTiledMap struct {
 		Y       int    `json:"y"`
 		Opacity int    `json:"opacity"`
 		Visible bool   `json:"visible"`
+		Objects []struct {
+			Name       string `json:"name"`
+			X          int    `json:"x"`
+			Y          int    `json:"y"`
+			Width      int    `json:"width"`
+			Height     int    `json:"height"`
+			Type       string `json:"type"`
+			TileID     int    `json:"gid"`
+			Properties []struct {
+				Name  string          `json:"name"`
+				Type  string          `json:"type"`
+				Value json.RawMessage `json:"value"`
+			} `json:"properties"`
+		} `json:"objects"`
 	} `json:"layers"`
 }
 
@@ -75,32 +89,6 @@ func loadZones() map[uuid.UUID]*zone {
 			zoneUUID := uuid.MustParse(name)
 			zones[zoneUUID] = loadTiledMap(zoneUUID)
 		}
-	}
-
-	// TODO: handle on tiled side
-	// drop player spawn down for overworld
-	zones[startingZoneUUID].WorldObjects[overworldSpawnObjectUUID] = &worldObject{
-		UUID: overworldSpawnObjectUUID,
-		Name: "spawn",
-		Tile: 189,
-		X:    24,
-		Y:    18,
-		Type: worldObjectTypePlayerSpawn,
-	}
-
-	// add dungeon enterence
-	zones[startingZoneUUID].WorldObjects[dungeonEntranceObjectUUID] = &worldObject{
-		UUID: dungeonEntranceObjectUUID,
-		Name: "dungeon entrance",
-		Tile: 84,
-		X:    33,
-		Y:    13,
-		Type: worldObjectTypePortal,
-		WarpTarget: &warpTarget{
-			ZoneUUID: dungeonFloor1UUID,
-			X:        0,
-			Y:        0,
-		},
 	}
 
 	return zones
@@ -147,6 +135,60 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 		if layer.Name == "ground" {
 			for _, tileID := range layer.Data {
 				z.Tiles = append(z.Tiles, tiles[tileID-1]) // -1 because of air tile (TODO: add air tile to -1 or something)
+			}
+		}
+		if layer.Name == "world_objects" {
+			for _, obj := range layer.Objects {
+				var UUID uuid.UUID
+
+				var hasWarpTarget bool
+				var warpTargetUUID uuid.UUID
+				var warpTargetX, warpTargetY int
+
+				for _, prop := range obj.Properties {
+					if prop.Name == "UUID" {
+						err := json.Unmarshal(prop.Value, &UUID)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					if prop.Name == "warpTargetUUID" {
+						hasWarpTarget = true
+						err := json.Unmarshal(prop.Value, &warpTargetUUID)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					if prop.Name == "warpTargetX" {
+						err := json.Unmarshal(prop.Value, &warpTargetX)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					if prop.Name == "warpTargetY" {
+						err := json.Unmarshal(prop.Value, &warpTargetY)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+				}
+
+				z.WorldObjects[UUID] = &worldObject{
+					UUID: UUID,
+					Name: obj.Name,
+					Tile: obj.TileID - 1,
+					X:    obj.X / obj.Width,
+					Y:    (obj.Y / obj.Height) - 1, // minus 1 because tiled objects start at the bottom left, tiles are top level (why the hell)
+
+					Type: worldObjectType(obj.Type),
+				}
+				if hasWarpTarget {
+					z.WorldObjects[UUID].WarpTarget = &warpTarget{
+						ZoneUUID: warpTargetUUID,
+						X:        warpTargetX,
+						Y:        warpTargetY,
+					}
+				}
 			}
 		}
 	}
