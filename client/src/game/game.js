@@ -97,6 +97,11 @@ class Game {
 
         if (game.zone) {
             this.ctx.drawImage(this.zoneCanvas, 0, 0);
+            for (let worldObjectUUID in game.zone.world_objects) {
+                const worldObject = game.zone.world_objects[worldObjectUUID];
+                this.tilemap.drawTile(this.ctx, worldObject.tile, worldObject.x, worldObject.y);
+            }
+
             for (let entityUUID in game.zone.entities) {
                 const entity = game.zone.entities[entityUUID];
                 this.tilemap.drawTile(this.ctx, entity.tile, entity.x, entity.y);

@@ -37,12 +37,31 @@ func buildDungeonFloor() *zone {
 		WorldObjects: map[uuid.UUID]*worldObject{},
 	}
 
-	for x := 0; x < level.Width; x++ {
-		for y := 0; y < level.Height; y++ {
+	for y := 0; y < level.Height; y++ {
+		for x := 0; x < level.Width; x++ {
 			tileType := level.Tiles[x][y].Type
+
 			tileIDOptions := genTileTypeToTileID[tileType]
 			tileID := tileIDOptions[rand.Intn(len(tileIDOptions))]
-			z.Tiles = append(z.Tiles, tiles[tileID])
+
+			if tileType == gen.TileTypeEntrance {
+				entranceUUID := uuid.New()
+				z.WorldObjects[entranceUUID] = &worldObject{
+					UUID: entranceUUID,
+					Name: "exit",
+					Tile: tileID,
+					X:    x,
+					Y:    y,
+					WarpTarget: &warpTarget{
+						ZoneUUID: startingZoneUUID, // TODO: when multi-layer dungeon, assign to last layer
+						X:        33,
+						Y:        13,
+					},
+				}
+				z.Tiles = append(z.Tiles, tiles[216]) // just add air for now, TODO: figure out better solution here
+			} else {
+				z.Tiles = append(z.Tiles, tiles[tileID])
+			}
 		}
 	}
 
