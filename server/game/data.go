@@ -182,9 +182,16 @@ func convertTileset(tileset *rawTiledTileset) map[int]tile {
 
 	for _, t := range tileset.Tiles {
 		var solid bool
+		var name string
 		for _, prop := range t.Properties {
 			if prop.Name == "solid" {
 				err := json.Unmarshal(prop.Value, &solid)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			if prop.Name == "name" {
+				err := json.Unmarshal(prop.Value, &name)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -193,6 +200,7 @@ func convertTileset(tileset *rawTiledTileset) map[int]tile {
 		res[t.ID] = tile{
 			ID:    t.ID,
 			Solid: solid,
+			Name:  name,
 		}
 	}
 

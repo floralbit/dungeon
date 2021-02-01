@@ -46,6 +46,8 @@ func buildDungeonFloor() *zone {
 			tileID := tileIDOptions[rand.Intn(len(tileIDOptions))]
 
 			if tileType == gen.TileTypeEntrance {
+				dungeonEntrance := zones[startingZoneUUID].WorldObjects[dungeonEntranceObjectUUID]
+
 				entranceUUID := uuid.New()
 				z.WorldObjects[entranceUUID] = &worldObject{
 					UUID: entranceUUID,
@@ -56,12 +58,12 @@ func buildDungeonFloor() *zone {
 					Type: worldObjectTypePortal,
 					WarpTarget: &warpTarget{
 						ZoneUUID: startingZoneUUID, // TODO: when multi-layer dungeon, assign to last layer
-						X:        33,
-						Y:        13,
+						X:        dungeonEntrance.X,
+						Y:        dungeonEntrance.Y,
 					},
 				}
 				// tie overworld entrance to stairs
-				zones[startingZoneUUID].WorldObjects[dungeonEntranceObjectUUID].WarpTarget = &warpTarget{
+				dungeonEntrance.WarpTarget = &warpTarget{
 					ZoneUUID: dungeonFloor1UUID,
 					X:        x,
 					Y:        y,
