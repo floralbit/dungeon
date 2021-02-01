@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const warriorTileId = 21
+const warriorTileID = 21
 
 var activePlayers = map[uuid.UUID]*entity{}
 
@@ -13,7 +13,7 @@ func newPlayer(client *model.Client) *entity {
 	p := entity{
 		UUID: client.Account.UUID,
 		Name: client.Account.Username,
-		Tile: warriorTileId,
+		Tile: warriorTileID,
 		Type: entityTypePlayer,
 
 		X: 24, Y: 18, // TODO: pull spawn from map data

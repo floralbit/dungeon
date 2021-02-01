@@ -3,11 +3,12 @@ package game
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 var gameTileset = loadTiledTileset("../data/tileset.json")
