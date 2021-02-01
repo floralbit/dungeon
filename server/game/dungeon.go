@@ -52,6 +52,7 @@ func buildDungeonFloor() *zone {
 					Tile: tileID,
 					X:    x,
 					Y:    y,
+					Type: worldObjectTypePlayerSpawn,
 					WarpTarget: &warpTarget{
 						ZoneUUID: startingZoneUUID, // TODO: when multi-layer dungeon, assign to last layer
 						X:        33,
@@ -68,4 +69,14 @@ func buildDungeonFloor() *zone {
 	// register zone - TODO: this is a hack for now, fix up later
 	zones[dungeonFloor1UUID] = z
 	return z
+}
+
+func (z *zone) findPlayerSpawn() (int, int) {
+	for _, obj := range z.WorldObjects {
+		if obj.Type == worldObjectTypePlayerSpawn {
+			return obj.X, obj.Y
+		}
+	}
+
+	return 0, 0
 }

@@ -12,13 +12,14 @@ type worldObject struct {
 	Y    int       `json:"y"`
 
 	// special features
-	WarpTarget *warpTarget `json:"warp_target,omitemtpy"`
+	Type       worldObjectType `json:"type"`
+	WarpTarget *warpTarget     `json:"warp_target,omitemtpy"`
 }
 
 type worldObjectType string
 
 const (
-	worldObjectTypeEntrance = "entrance"
+	worldObjectTypePlayerSpawn = "playerSpawn"
 )
 
 type warpTarget struct {
