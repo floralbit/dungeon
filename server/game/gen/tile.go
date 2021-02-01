@@ -16,6 +16,10 @@ const (
 	TileTypeAir
 	// TileTypeDoor ..
 	TileTypeDoor
+	// TileTypeTorch ...
+	TileTypeTorch
+	// TileTypeEntrance ...
+	TileTypeEntrance
 )
 
 // Tile ...
@@ -28,11 +32,13 @@ type Tile struct {
 
 // for debug image saving
 var tileTypeToColor = map[TileType]color.Color{
-	TileTypeWall:   color.Black,
-	TileTypeGround: color.White,
-	TileTypeHall:   color.RGBA{240, 240, 240, 255},
-	TileTypeAir:    color.RGBA{255, 255, 255, 0},
-	TileTypeDoor:   color.RGBA{255, 205, 201, 255},
+	TileTypeWall:     color.Black,
+	TileTypeGround:   color.White,
+	TileTypeHall:     color.RGBA{240, 240, 240, 255},
+	TileTypeAir:      color.RGBA{255, 255, 255, 0},
+	TileTypeDoor:     color.RGBA{255, 205, 201, 255},
+	TileTypeTorch:    color.RGBA{255, 136, 0, 255},
+	TileTypeEntrance: color.RGBA{0, 0, 255, 255},
 }
 
 func (l *Level) inBounds(x, y int) bool {
@@ -84,6 +90,22 @@ func (l *Level) superfluousWall(x, y int) bool {
 	neighbors := l.allNeighbors(x, y)
 	for _, n := range neighbors {
 		if n.Type != TileTypeWall {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (l *Level) freeSpace(x, y int) bool {
+	t := l.Tiles[x][y]
+	if t.Type != TileTypeGround {
+		return false
+	}
+
+	neighbors := l.neighbors(x, y)
+	for _, n := range neighbors {
+		if n.Type == TileTypeDoor {
 			return false
 		}
 	}

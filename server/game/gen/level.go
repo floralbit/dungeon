@@ -15,6 +15,9 @@ const (
 	levelWidth  = 84
 	levelHeight = 84
 	wfcScale    = 3
+
+	torchLikelihood    = .05 // 5%
+	entranceLikelihood = .05 // 5%
 )
 
 // Level ...
@@ -57,11 +60,11 @@ func BuildLevel() (*Level, error) {
 		regions = l.regions()
 	}
 
-	log.Println("removing superfluous walls")
+	// post processing
 	l.removeSuperfluousWalls()
-
-	log.Println("placing doors")
 	l.placeDoors()
+	l.placeTorches()
+	l.placeEntrance()
 
 	l.saveImage("dungeon")
 
@@ -158,6 +161,44 @@ func (l *Level) placeDoors() {
 
 	for t := range doors {
 		t.Type = TileTypeDoor
+	}
+}
+
+func (l *Level) placeTorches() {
+	torches := map[*Tile]bool{}
+
+	for x := 0; x < l.Width; x++ {
+		for y := 0; y < l.Height; y++ {
+			t := l.Tiles[x][y]
+			if !l.freeSpace(x, y) {
+				continue
+			}
+			neighbors := l.neighbors(x, y)
+			for _, n := range neighbors {
+				if n.Type == TileTypeWall {
+					if rand.Float32() < torchLikelihood {
+						torches[t] = true
+					}
+				}
+			}
+		}
+	}
+
+	for t := range torches {
+		t.Type = TileTypeTorch
+	}
+}
+
+func (l *Level) placeEntrance() {
+	for {
+		for x := 0; x < l.Width; x++ {
+			for y := 0; y < l.Height; y++ {
+				if l.freeSpace(x, y) && rand.Float32() < entranceLikelihood {
+					l.Tiles[x][y].Type = TileTypeEntrance
+					return
+				}
+			}
+		}
 	}
 }
 

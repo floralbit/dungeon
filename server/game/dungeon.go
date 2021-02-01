@@ -12,11 +12,13 @@ var dungeonFloor1UUID = uuid.MustParse("6a67086c-eb9c-44c1-85b1-a140df7e4272")
 var dungeonFloor1 = buildDungeonFloor() // TODO: put this logic into game loop
 
 var genTileTypeToTileID = map[gen.TileType][]int{
-	gen.TileTypeWall:   {260, 262, 263, 264},
-	gen.TileTypeGround: {243, 244, 245, 246},
-	gen.TileTypeHall:   {247},
-	gen.TileTypeAir:    {216},
-	gen.TileTypeDoor:   {224, 225, 230},
+	gen.TileTypeWall:     {260, 262, 263, 264},
+	gen.TileTypeGround:   {243, 244, 245, 246},
+	gen.TileTypeHall:     {247},
+	gen.TileTypeAir:      {216},
+	gen.TileTypeDoor:     {224, 225, 230},
+	gen.TileTypeTorch:    {409},
+	gen.TileTypeEntrance: {211},
 }
 
 func buildDungeonFloor() *zone {
