@@ -29,7 +29,7 @@ var tileTypeToColor = map[TileType]color.Color{
 	TileTypeWall:   color.Black,
 	TileTypeGround: color.White,
 	TileTypeHall:   color.RGBA{128, 128, 128, 255},
-	TileTypeAir:    color.RGBA{240, 240, 240, 255},
+	TileTypeAir:    color.RGBA{255, 255, 255, 0},
 }
 
 func (l *Level) inBounds(x, y int) bool {
