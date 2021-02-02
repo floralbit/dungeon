@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.0" orientation="orthogonal" renderorder="right-down" compressionlevel="-1" width="20" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="3" nextobjectid="2">
+<map version="1.2" tiledversion="1.3.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="3" nextobjectid="2">
+ <properties>
+  <property name="name" value="Sword &amp; Tabby Inn"/>
+ </properties>
  <tileset firstgid="1" source="../tileset.tsx"/>
  <layer id="1" name="ground" width="20" height="10">
   <data encoding="csv">

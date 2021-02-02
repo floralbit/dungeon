@@ -31,6 +31,23 @@ body {
   border: 1px solid #ffffff;
 }
 
+#info-box-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30em;
+}
+
+#info-box {
+  margin: .5em;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  height: 100%;
+  text-align: center;
+  padding: .5em;
+}
+
 #chat-log ul {
   list-style-type: none;
   margin: 0;

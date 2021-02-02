@@ -4,7 +4,7 @@
   <export target="10f8b073-cbd7-46b7-a6e3-9cbdf68a933f.json" format="json"/>
  </editorsettings>
  <properties>
-  <property name="name" value="town"/>
+  <property name="name" value="Easthallow Town"/>
  </properties>
  <tileset firstgid="1" source="../tileset.tsx"/>
  <layer id="1" name="ground" width="50" height="50">

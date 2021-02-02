@@ -30,7 +30,7 @@ func buildDungeonFloor() *zone {
 
 	z := &zone{
 		UUID:   dungeonFloor1UUID,
-		Name:   "dungeon",
+		Name:   "Dungeon Floor 1",
 		Width:  level.Width,
 		Height: level.Height,
 

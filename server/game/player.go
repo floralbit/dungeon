@@ -29,7 +29,7 @@ func rollPlayerStats(e *entity) {
 	e.Stats.Level = 1
 
 	// use 3d6 for stats
-	r := roll{6, 1, 0} // 3d6 + 0
+	r := roll{6, 3, 0} // 3d6 + 0
 	e.Stats.Strength = r.roll()
 	e.Stats.Dexterity = r.roll()
 	e.Stats.Constitution = r.roll()
