@@ -59,6 +59,7 @@ func handleJoinEvent(e model.ClientEvent) {
 	x, y := zones[startingZoneUUID].findPlayerSpawn() // TODO: handle somewhere else
 	p.X = x
 	p.Y = y
+	p.send(newServerMessageEvent(motd)) // send message of the day
 	zones[startingZoneUUID].addEntity(p)
 }
 

@@ -84,6 +84,18 @@ export default function logReducer(state = initialState, action) {
                 ]
             }
         }
+
+        if (data.message?.message) {
+            return {
+                ...state,
+                log: [
+                    ...state.log,
+                    {serverMessage: {
+                        message: data.message.message
+                    }}
+                ]
+            }
+        }
     }
 
     return state;

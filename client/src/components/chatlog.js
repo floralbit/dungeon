@@ -32,6 +32,10 @@ function ChatLog(props) {
       <div id="chat-log">
         <ul>
           {log.map((entry, i) => {
+              if (entry.serverMessage) {
+                return <li key={i} style={{color: '#adadad'}}>{entry.serverMessage.message}</li>
+              }
+
               if (entry.chat) {
                 return <li key={i}><span style={{color: '#00ff00'}}>{entry.chat.name}</span>: {entry.chat.message}</li>;
               }
