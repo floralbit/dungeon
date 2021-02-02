@@ -19,6 +19,12 @@ function InfoBox(props) {
                         lookingAt = worldObject.name;
                     }
                 }
+                for (let entityUUID in game.zone.entities) {
+                    const entity = game.zone.entities[entityUUID];
+                    if (entity.x == ui.hovering.x && entity.y == ui.hovering.y) {
+                        lookingAt = entity.name;
+                    }
+                }
             }
         }
 
