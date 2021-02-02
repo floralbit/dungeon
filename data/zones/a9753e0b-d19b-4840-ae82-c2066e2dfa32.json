@@ -31,7 +31,7 @@
                  "gid":225,
                  "height":12,
                  "id":1,
-                 "name":"Door",
+                 "name":"Door to Easthallow",
                  "properties":[
                         {
                          "name":"UUID",
@@ -76,7 +76,7 @@
          "value":"Easthallow Temple"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.3.0",
+ "tiledversion":"1.4.2",
  "tileheight":12,
  "tilesets":[
         {
@@ -85,6 +85,6 @@
         }],
  "tilewidth":12,
  "type":"map",
- "version":1.2,
+ "version":1.4,
  "width":20
 }

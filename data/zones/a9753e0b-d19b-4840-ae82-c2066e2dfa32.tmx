@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="3" nextobjectid="2">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="20" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="3" nextobjectid="2">
  <editorsettings>
   <export target="a9753e0b-d19b-4840-ae82-c2066e2dfa32.json" format="json"/>
  </editorsettings>
@@ -22,7 +22,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="world_objects">
-  <object id="1" name="Door" type="portal" gid="225" x="36" y="120" width="12" height="12">
+  <object id="1" name="Door to Easthallow" type="portal" gid="225" x="36" y="120" width="12" height="12">
    <properties>
     <property name="UUID" value="9585e289-e9ab-4949-912c-da56afee53bc"/>
     <property name="warpTargetUUID" value="10f8b073-cbd7-46b7-a6e3-9cbdf68a933f"/>
