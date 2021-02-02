@@ -16,6 +16,7 @@ type entity interface {
 	Spawn(uuid.UUID)
 	Despawn()
 
+	Update(dt float64)
 	Send(serverEvent)
 
 	Data() *entityData
@@ -63,6 +64,10 @@ func (e *entityData) Spawn(zoneUUID uuid.UUID) {
 
 func (e *entityData) Despawn() {
 	e.zone.removeEntity(e)
+}
+
+func (e *entityData) Update(dt float64) {
+	// NOP as default
 }
 
 func (e *entityData) Send(event serverEvent) {

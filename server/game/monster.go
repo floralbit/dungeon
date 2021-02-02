@@ -7,8 +7,15 @@ import (
 	"log"
 )
 
+const (
+	monsterMoveTime = 1.0 // in s
+	monsterAgroDist = 6   // eucledian dist
+)
+
 type monster struct {
 	entityData
+
+	moveTimer float64
 }
 
 type monsterType string
@@ -49,4 +56,39 @@ func newMonster(t monsterType) *monster {
 	}
 
 	return m
+}
+
+func (m *monster) Update(dt float64) {
+	m.moveTimer += dt
+	if m.moveTimer >= monsterMoveTime {
+		m.moveTimer = 0
+		m.move()
+	}
+}
+
+func (m *monster) move() {
+	// TODO: monster state machine w/ agro state on specific player
+	for _, e := range m.zone.Entities {
+		if e.Data().Type == entityTypePlayer {
+			if dist(m.X, m.Y, e.Data().X, e.Data().Y) < monsterAgroDist {
+				dx := e.Data().X - m.X
+				dy := e.Data().Y - m.Y
+				var moveX, moveY int
+				if dx > 0 {
+					moveX = 1
+				}
+				if dx < 0 {
+					moveX = -1
+				}
+				if dy > 0 {
+					moveY = 1
+				}
+				if dy < 0 {
+					moveY = -1
+				}
+				m.Move(m.X+moveX, m.Y+moveY)
+				return
+			}
+		}
+	}
 }

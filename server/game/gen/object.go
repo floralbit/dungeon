@@ -11,7 +11,7 @@ type ObjectType string
 const (
 	ObjectTypeMonsterSlot = "monster_slot"
 
-	monsterSlotLiklihood = 0.005 // .5%
+	monsterSlotLiklihood = 0.01 // 1%
 )
 
 func (l *Level) placeMonsters() {

@@ -51,7 +51,9 @@ func processEvents(dt float64) {
 }
 
 func update(dt float64) {
-	// do game logic updates (monsters, whatever)
+	for _, z := range zones {
+		z.update(dt)
+	}
 }
 
 func handleJoinEvent(e model.ClientEvent) {

@@ -62,3 +62,9 @@ func (z *zone) send(event serverEvent) {
 		e.Send(event)
 	}
 }
+
+func (z *zone) update(dt float64) {
+	for _, e := range z.Entities {
+		e.Update(dt)
+	}
+}
