@@ -34,9 +34,8 @@ export const networkMiddleware = () => {
           move: {x: action.payload.x, y: action.payload.y},
         }));
         break;
-
-      default:
-        return next(action);
     }
+    
+    return next(action);
   }
 };

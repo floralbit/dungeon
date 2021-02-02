@@ -72,7 +72,6 @@ func handleChatEvent(e model.ClientEvent) {
 }
 
 func handleMoveEvent(e model.ClientEvent) {
-	// TODO: pass to zone to handle for collision detection
 	p := activePlayers[e.Sender.Account.UUID]
 	p.move(e.Move.X, e.Move.Y)
 }

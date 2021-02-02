@@ -41,10 +41,17 @@ class Game {
                 const player = game.zone.entities[game.accountUUID];
 
                 // center camera on player
-                const targetCamX = (player.x * TILE_SIZE) - (this.canvas.width / this.camera.zoom)/2;
-                const targetCamY = (player.y * TILE_SIZE) - (this.canvas.height / this.camera.zoom)/2;
+                const targetCamX = Math.floor((player.x * TILE_SIZE) - (this.canvas.width / this.camera.zoom)/2);
+                const targetCamY = Math.floor((player.y * TILE_SIZE) - (this.canvas.height / this.camera.zoom)/2);
                 this.camera.x = lerp(this.camera.x, targetCamX, this.cameraSpeed * dt);
                 this.camera.y = lerp(this.camera.y, targetCamY, this.cameraSpeed * dt);
+                // camera correction if we get close (avoid artifacts)
+                if (Math.abs(this.camera.x - targetCamX) < .3) {
+                    this.camera.x = targetCamX; 
+                }
+                if (Math.abs(this.camera.y - targetCamY) < .3) {
+                    this.camera.y = targetCamY;
+                }
 
                 // handle movement
                 if (this.movementTimer > 0) {
@@ -77,8 +84,14 @@ class Game {
                     }
 
                     if (up || down || left || right) {
-                        this.store.dispatch(sendMove(moveX, moveY));
-                        this.movementTimer = this.movementTime;
+                        // collision detection
+                        if (moveX >= 0 && moveX < game.zone.width && moveY >= 0 && moveY < game.zone.height) {
+                            const t = game.zone.tiles[(moveY * game.zone.width) + moveX];
+                            if (!t.solid) {
+                                this.store.dispatch(sendMove(moveX, moveY));
+                                this.movementTimer = this.movementTime;
+                            }
+                        }
                     }
                 }
             }
@@ -129,8 +142,6 @@ class Game {
     }
 
     mouseClickHandler(event) {
-        const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
-        console.log(tileX, tileY);
     }
 
     mouseOverHandler(event) {

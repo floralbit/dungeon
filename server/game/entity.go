@@ -41,10 +41,13 @@ type stats struct {
 func (e *entity) move(x, y int) {
 	t := e.zone.getTile(x, y)
 	if t == nil {
-		return // edge of map, don't move
+		// edge of map, don't move
+		e.send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
+		return
 	}
 
 	if t.Solid {
+		e.send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
 		return
 	}
 

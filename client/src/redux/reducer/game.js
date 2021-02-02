@@ -1,4 +1,4 @@
-import { NETWORK_RECV_MESSAGE } from "../actions";
+import { NETWORK_RECV_MESSAGE, SEND_MOVE } from "../actions";
 
 const initialState = {
     accountUUID: null,
@@ -7,6 +7,25 @@ const initialState = {
 };
 
 export default function gameReducer(state = initialState, action) {
+    // sends should be guaranteed to happen before recvs, so push player to expected pos
+    if (action.type === SEND_MOVE) {
+        const {x, y} = action.payload;
+
+        return {
+            ...state,
+            zone: {
+                ...state.zone,
+                entities: {
+                    ...state.zone.entities,
+                    [state.accountUUID]: {
+                        ...state.zone.entities[state.accountUUID],
+                        x, y,
+                    }
+                }
+            }
+        };
+    }
+
     if (action.type === NETWORK_RECV_MESSAGE) {
         const data = action.payload;
 
