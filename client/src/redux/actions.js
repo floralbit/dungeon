@@ -7,6 +7,7 @@ export const KEY_DOWN = 'KEY_DOWN';
 export const KEY_UP = 'KEY_UP';
 
 export const SET_TYPING = 'SET_TYPING';
+export const SET_HOVERING = 'SET_HOVERING';
 
 // client side, just for middlewares
 export const SEND_CHAT = 'SEND_CHAT';
@@ -48,4 +49,13 @@ export const keyUp = (code) => ({
 export const setTyping = (status) => ({
   type: SET_TYPING,
   payload: status,
+});
+
+export const setHovering = (isHovering, hoveringX, hoveringY) => ({
+  type: SET_HOVERING,
+  payload: {
+    isHovering,
+    hoveringX,
+    hoveringY,
+  },
 });

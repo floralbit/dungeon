@@ -1,8 +1,13 @@
-import { KEY_DOWN, KEY_UP, SET_TYPING } from "../actions";
+import { KEY_DOWN, KEY_UP, SET_HOVERING, SET_TYPING } from "../actions";
 
 const initialState = {
     keyPressed: {},
     isTyping: false,
+    hovering: {
+        isHovering: false,
+        x: 0,
+        y: 0,
+    }
 };
 
 export default function uiReducer(state = initialState, action) {
@@ -33,6 +38,17 @@ export default function uiReducer(state = initialState, action) {
                 ...state,
                 isTyping,
             };
+        
+        case SET_HOVERING:
+            const {isHovering, hoveringX, hoveringY} = action.payload;
+            return {
+                ...state,
+                hovering: {
+                    isHovering,
+                    x: hoveringX,
+                    y: hoveringY,
+                }
+            }
         
         default:
             return state;

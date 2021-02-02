@@ -1,6 +1,6 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
 import {lerp} from './util';
-import {sendMove} from '../redux/actions';
+import {sendMove, setHovering} from '../redux/actions';
 
 class Game {
     constructor(canvas, ctx, store) {
@@ -23,7 +23,12 @@ class Game {
 
     load() {
         this.tilemap = new Tilemap();
+        
         this.canvas.onclick = this.mouseClickHandler.bind(this);
+        this.canvas.onmouseover = this.mouseOverHandler.bind(this);
+        this.canvas.onmouseout = this.mouseOutHandler.bind(this);
+        this.canvas.onmousemove = this.mouseMoveHandler.bind(this);
+
         return Promise.all([this.tilemap.load()]);
     }
 
@@ -126,17 +131,32 @@ class Game {
     mouseClickHandler(event) {
         const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
         console.log(tileX, tileY);
-      }
+    }
+
+    mouseOverHandler(event) {
+        const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
+        this.store.dispatch(setHovering(true, tileX, tileY));
+    }
+
+    mouseOutHandler(event) {
+        const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
+        this.store.dispatch(setHovering(false, tileX, tileY));
+    }
+
+    mouseMoveHandler(event) {
+        const { tileX, tileY } = this.canvasToWorldCoordinates(event.x, event.y);
+        this.store.dispatch(setHovering(true, tileX, tileY));
+    }
     
-      canvasToWorldCoordinates(x, y) {
+    canvasToWorldCoordinates(x, y) {
         const tileX = Math.floor(
-          (x / this.camera.zoom + this.camera.x) / TILE_SIZE
+            (x / this.camera.zoom + this.camera.x) / TILE_SIZE
         );
         const tileY = Math.floor(
-          (y / this.camera.zoom + this.camera.y) / TILE_SIZE
+            (y / this.camera.zoom + this.camera.y) / TILE_SIZE
         );
         return { tileX, tileY };
-      }
+    }
 }
 
 export default Game;
