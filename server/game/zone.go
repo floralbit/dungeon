@@ -20,7 +20,7 @@ type zone struct {
 	Height int       `json:"height"`
 	Tiles  []tile    `json:"tiles"`
 
-	Entities     map[uuid.UUID]*entity      `json:"entities"`
+	Entities     map[uuid.UUID]entity       `json:"entities"`
 	WorldObjects map[uuid.UUID]*worldObject `json:"world_objects"`
 }
 
@@ -45,17 +45,20 @@ func (z *zone) getWorldObjects(x, y int) []*worldObject {
 	return objs
 }
 
-func (z *zone) addEntity(e *entity) {
-	z.Entities[e.UUID] = e
-	e.zone = z
-	z.send(newSpawnEvent(e))
-
-	if e.Type == entityTypePlayer {
-		e.send(newZoneLoadEvent(z)) // send player zone data
-	}
+func (z *zone) addEntity(e entity) {
+	z.Entities[e.Data().UUID] = e
+	e.Data().zone = z
+	z.send(newSpawnEvent(e.Data()))
+	e.Send(newZoneLoadEvent(z)) // send entity the zone data
 }
 
-func (z *zone) removeEntity(e *entity) {
-	delete(z.Entities, e.UUID)
-	z.send(newDespawnEvent(e))
+func (z *zone) removeEntity(e entity) {
+	delete(z.Entities, e.Data().UUID)
+	z.send(newDespawnEvent(e.Data()))
+}
+
+func (z *zone) send(event serverEvent) {
+	for _, e := range z.Entities {
+		e.Send(event)
+	}
 }

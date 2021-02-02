@@ -34,7 +34,7 @@ func buildDungeonFloor() *zone {
 		Width:  level.Width,
 		Height: level.Height,
 
-		Entities:     map[uuid.UUID]*entity{},
+		Entities:     map[uuid.UUID]entity{},
 		WorldObjects: map[uuid.UUID]*worldObject{},
 	}
 

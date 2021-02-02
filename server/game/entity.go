@@ -11,7 +11,17 @@ const (
 	entityTypePlayer = "player"
 )
 
-type entity struct {
+type entity interface {
+	Move(int, int)
+	Spawn(uuid.UUID)
+	Despawn()
+
+	Send(serverEvent)
+
+	Data() *entityData
+}
+
+type entityData struct {
 	UUID uuid.UUID  `json:"uuid"`
 	Name string     `json:"name"`
 	Tile int        `json:"tile"` // representing tile
@@ -38,41 +48,28 @@ type stats struct {
 	Charisma     int `json:"charisma"`
 }
 
-func (e *entity) move(x, y int) {
-	t := e.zone.getTile(x, y)
-	if t == nil {
-		// edge of map, don't move
-		e.send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
-		return
-	}
-
-	if t.Solid {
-		e.send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
-		return
-	}
-
-	objs := e.zone.getWorldObjects(x, y)
-	for _, obj := range objs {
-		if obj.WarpTarget != nil {
-			e.zone.removeEntity(e)
-			zones[obj.WarpTarget.ZoneUUID].addEntity(e)
-			e.X = obj.WarpTarget.X
-			e.Y = obj.WarpTarget.Y
-			return
-		}
-	}
-
+func (e *entityData) Move(x, y int) {
 	e.X = x
 	e.Y = y
 
 	e.zone.send(newMoveEvent(e, x, y))
 }
 
-func (e *entity) leave() {
+func (e *entityData) Spawn(zoneUUID uuid.UUID) {
+	z := zones[zoneUUID]
+	z.addEntity(e)
+}
+
+func (e *entityData) Despawn() {
 	e.zone.removeEntity(e)
-	if e.Type == entityTypePlayer {
-		delete(activePlayers, e.UUID)
-	}
+}
+
+func (e *entityData) Send(event serverEvent) {
+	// NOP as default, players handle sends only
+}
+
+func (e *entityData) Data() *entityData {
+	return e
 }
 
 func modifier(stat int) int {

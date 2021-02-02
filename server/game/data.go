@@ -118,7 +118,7 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 		Height: mapData.Height,
 		Tiles:  []tile{},
 
-		Entities:     map[uuid.UUID]*entity{},
+		Entities:     map[uuid.UUID]entity{},
 		WorldObjects: map[uuid.UUID]*worldObject{},
 	}
 

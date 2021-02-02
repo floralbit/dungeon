@@ -3,20 +3,20 @@ package game
 import "github.com/google/uuid"
 
 type serverEvent struct {
-	Entity *entityEvent `json:"entity,omitempty"`
-	Zone *zoneEvent `json:"zone,omitempty"`
-	WorldObject *worldObjectEvent `json:"world_object,omitempty"`
-	Message *serverMessageEvent `json:"message,omitempty"`
+	Entity      *entityEvent        `json:"entity,omitempty"`
+	Zone        *zoneEvent          `json:"zone,omitempty"`
+	WorldObject *worldObjectEvent   `json:"world_object,omitempty"`
+	Message     *serverMessageEvent `json:"message,omitempty"`
 }
 
 type entityEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
-	Spawn *entity `json:"spawn,omitempty"`
-	Despawn bool `json:"despawn"`
-	Die bool `json:"die"`
-	Move *entityMoveEvent `json:"move,omitempty"`
-	Chat *entityChatEvent `json:"chat,omitempty"`
+	Spawn   *entityData      `json:"spawn,omitempty"`
+	Despawn bool             `json:"despawn"`
+	Die     bool             `json:"die"`
+	Move    *entityMoveEvent `json:"move,omitempty"`
+	Chat    *entityChatEvent `json:"chat,omitempty"`
 }
 
 type entityMoveEvent struct {
@@ -37,42 +37,42 @@ type zoneEvent struct {
 type worldObjectEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
-	Spawn *worldObject `json:"spawn,omitempty"`
-	Despawn bool `json:"despawn"`
+	Spawn   *worldObject `json:"spawn,omitempty"`
+	Despawn bool         `json:"despawn"`
 }
 
 type serverMessageEvent struct {
 	Message string `json:"message"`
 }
 
-func newSpawnEvent(e *entity) serverEvent {
+func newSpawnEvent(e *entityData) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID: e.UUID,
+			UUID:  e.UUID,
 			Spawn: e,
 		},
 	}
 }
 
-func newDespawnEvent(e *entity) serverEvent {
+func newDespawnEvent(e *entityData) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID: e.UUID,
+			UUID:    e.UUID,
 			Despawn: true,
 		},
 	}
 }
 
-func newDieEvent(e *entity) serverEvent {
+func newDieEvent(e *entityData) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
 			UUID: e.UUID,
-			Die: true,
+			Die:  true,
 		},
 	}
 }
 
-func newMoveEvent(e *entity, x, y int) serverEvent {
+func newMoveEvent(e *entityData, x, y int) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
 			UUID: e.UUID,
@@ -84,7 +84,7 @@ func newMoveEvent(e *entity, x, y int) serverEvent {
 	}
 }
 
-func newChatEvent(e *entity, message string) serverEvent {
+func newChatEvent(e *entityData, message string) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
 			UUID: e.UUID,
@@ -107,7 +107,7 @@ func newZoneLoadEvent(z *zone) serverEvent {
 func newWorldObjectSpawnEvent(o *worldObject) serverEvent {
 	return serverEvent{
 		WorldObject: &worldObjectEvent{
-			UUID: o.UUID,
+			UUID:  o.UUID,
 			Spawn: o,
 		},
 	}
@@ -116,7 +116,7 @@ func newWorldObjectSpawnEvent(o *worldObject) serverEvent {
 func newWorldObjectDespawnEvent(o *worldObject) serverEvent {
 	return serverEvent{
 		WorldObject: &worldObjectEvent{
-			UUID: o.UUID,
+			UUID:    o.UUID,
 			Despawn: true,
 		},
 	}

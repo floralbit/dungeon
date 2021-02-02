@@ -55,24 +55,20 @@ func update(dt float64) {
 }
 
 func handleJoinEvent(e model.ClientEvent) {
-	p := newPlayer(e.Sender)                          // TODO: pull from storage
-	x, y := zones[startingZoneUUID].findPlayerSpawn() // TODO: handle somewhere else
-	p.X = x
-	p.Y = y
-	p.send(newServerMessageEvent(motd)) // send message of the day
-	zones[startingZoneUUID].addEntity(p)
+	p := newPlayer(e.Sender) // TODO: pull from storage
+	p.Spawn(startingZoneUUID)
 }
 
 func handleLeaveEvent(e model.ClientEvent) {
-	activePlayers[e.Sender.Account.UUID].leave()
+	activePlayers[e.Sender.Account.UUID].Despawn()
 }
 
 func handleChatEvent(e model.ClientEvent) {
 	p := activePlayers[e.Sender.Account.UUID]
-	p.zone.send(newChatEvent(p, e.Chat.Message))
+	p.Data().zone.send(newChatEvent(p.Data(), e.Chat.Message))
 }
 
 func handleMoveEvent(e model.ClientEvent) {
 	p := activePlayers[e.Sender.Account.UUID]
-	p.move(e.Move.X, e.Move.Y)
+	p.Move(e.Move.X, e.Move.Y)
 }
