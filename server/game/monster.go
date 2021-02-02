@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/nickdavies/go-astar/astar"
 	"log"
 )
 
@@ -71,22 +72,24 @@ func (m *monster) move() {
 	for _, e := range m.zone.Entities {
 		if e.Data().Type == entityTypePlayer {
 			if dist(m.X, m.Y, e.Data().X, e.Data().Y) < monsterAgroDist {
-				dx := e.Data().X - m.X
-				dy := e.Data().Y - m.Y
-				var moveX, moveY int
-				if dx > 0 {
-					moveX = 1
+				a := astar.NewAStar(m.zone.Width, m.zone.Height)
+				p2p := astar.NewPointToPoint()
+				for x := 0; x < m.zone.Width; x++ {
+					for y := 0; y < m.zone.Height; y++ {
+						t := m.zone.getTile(x, y)
+						if t.Solid {
+							a.FillTile(astar.Point{Row: x, Col: y}, -1)
+						}
+					}
 				}
-				if dx < 0 {
-					moveX = -1
+
+				source := []astar.Point{{Row: m.X, Col: m.Y}}
+				target := []astar.Point{{Row: e.Data().X, Col: e.Data().Y}}
+
+				path := a.FindPath(p2p, source, target)
+				if path != nil && path.Parent != nil {
+					m.Move(path.Parent.Row, path.Parent.Col)
 				}
-				if dy > 0 {
-					moveY = 1
-				}
-				if dy < 0 {
-					moveY = -1
-				}
-				m.Move(m.X+moveX, m.Y+moveY)
 				return
 			}
 		}
