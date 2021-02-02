@@ -1,15 +1,21 @@
 {
   "goblin": {
-    "tile": 44,
     "name": "Goblin",
+    "tile": 44,
+
+    "move_speed": 0.5,
+    "agro_distance": 6,
+
     "hd": 1,
     "ac": 8,
+
     "strength": 8,
     "dexterity": 14,
     "constitution": 10,
     "intelligence": 10,
     "wisdom": 8,
     "charisma": 8,
+
     "attack": {
       "name": "Scimitar",
       "n": 1,

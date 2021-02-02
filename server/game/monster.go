@@ -8,13 +8,11 @@ import (
 	"log"
 )
 
-const (
-	monsterMoveTime = 1.0 // in s
-	monsterAgroDist = 6   // eucledian dist
-)
-
 type monster struct {
 	entityData
+
+	moveSpeed    float64
+	agroDistance float64
 
 	moveTimer float64
 }
@@ -48,6 +46,8 @@ func newMonster(t monsterType) *monster {
 				Charisma:     template.Charisma,
 			},
 		},
+		moveSpeed:    template.MoveSpeed,
+		agroDistance: template.AgroDistance,
 	}
 
 	// roll hp based on hd
@@ -61,7 +61,7 @@ func newMonster(t monsterType) *monster {
 
 func (m *monster) Update(dt float64) {
 	m.moveTimer += dt
-	if m.moveTimer >= monsterMoveTime {
+	if m.moveTimer >= m.moveSpeed {
 		m.moveTimer = 0
 		m.move()
 	}
@@ -71,9 +71,13 @@ func (m *monster) move() {
 	// TODO: monster state machine w/ agro state on specific player
 	for _, e := range m.zone.Entities {
 		if e.Data().Type == entityTypePlayer {
-			if dist(m.X, m.Y, e.Data().X, e.Data().Y) < monsterAgroDist {
+			// just target the first player we see in the zone
+			if dist(m.X, m.Y, e.Data().X, e.Data().Y) < m.agroDistance {
+				// run a*
 				a := astar.NewAStar(m.zone.Width, m.zone.Height)
 				p2p := astar.NewPointToPoint()
+
+				// avoid walls
 				for x := 0; x < m.zone.Width; x++ {
 					for y := 0; y < m.zone.Height; y++ {
 						t := m.zone.getTile(x, y)
@@ -83,12 +87,19 @@ func (m *monster) move() {
 					}
 				}
 
+				// avoid other monsters
+				for _, otherE := range m.zone.Entities {
+					if otherE.Data().Type == entityTypeMonster && otherE.Data().UUID != m.UUID {
+						a.FillTile(astar.Point{Row: otherE.Data().X, Col: otherE.Data().Y}, -1)
+					}
+				}
+
 				source := []astar.Point{{Row: m.X, Col: m.Y}}
 				target := []astar.Point{{Row: e.Data().X, Col: e.Data().Y}}
 
 				path := a.FindPath(p2p, source, target)
 				if path != nil && path.Parent != nil {
-					m.Move(path.Parent.Row, path.Parent.Col)
+					m.Move(path.Parent.Row, path.Parent.Col) // move to first tile on path
 				}
 				return
 			}

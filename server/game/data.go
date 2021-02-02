@@ -77,17 +77,23 @@ type rawTiledTileset struct {
 }
 
 type monsterTemplate struct {
-	Tile         int    `json:"tile"`
-	Name         string `json:"name"`
-	HD           int    `json:"hd"`
-	AC           int    `json:"ac"`
-	Strength     int    `json:"strength"`
-	Dexterity    int    `json:"dexterity"`
-	Constitution int    `json:"constitution"`
-	Intelligence int    `json:"intelligence"`
-	Wisdom       int    `json:"wisdom"`
-	Charisma     int    `json:"charisma"`
-	Attack       struct {
+	Name string `json:"name"`
+	Tile int    `json:"tile"`
+
+	MoveSpeed    float64 `json:"move_speed"`
+	AgroDistance float64 `json:"agro_distance"`
+
+	HD int `json:"hd"`
+	AC int `json:"ac"`
+
+	Strength     int `json:"strength"`
+	Dexterity    int `json:"dexterity"`
+	Constitution int `json:"constitution"`
+	Intelligence int `json:"intelligence"`
+	Wisdom       int `json:"wisdom"`
+	Charisma     int `json:"charisma"`
+
+	Attack struct {
 		Name  string `json:"name"`
 		N     int    `json:"n"`
 		Sides int    `json:"sides"`
