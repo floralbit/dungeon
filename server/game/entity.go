@@ -1,7 +1,6 @@
 package game
 
 import (
-	"github.com/floralbit/dungeon/model"
 	"github.com/google/uuid"
 )
 
@@ -32,13 +31,14 @@ type entityData struct {
 	X int `json:"x"`
 	Y int `json:"y"`
 
-	zone   *zone         `json:"-"`
-	client *model.Client `json:"-"`
+	zone *zone `json:"-"`
 }
 
 type stats struct {
 	Level int `json:"level"`
 	HP    int `json:"hp"`
+	XP    int `json:"xp"'`
+	AC    int `json:"ac"`
 
 	Strength     int `json:"strength"`
 	Dexterity    int `json:"dexterity"`

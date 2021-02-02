@@ -22,8 +22,6 @@ func newPlayer(client *model.Client) *player {
 			Name: client.Account.Username,
 			Tile: warriorTileID,
 			Type: entityTypePlayer,
-
-			client: client,
 		},
 
 		client: client,
@@ -88,6 +86,7 @@ func (p *player) Send(event serverEvent) {
 
 func (p *player) rollStats() {
 	p.Stats.Level = 1
+	p.Stats.XP = 0
 
 	// use 3d6 for stats
 	r := roll{6, 3, 0} // 3d6 + 0
@@ -103,4 +102,6 @@ func (p *player) rollStats() {
 	for p.Stats.HP <= 0 {
 		p.Stats.HP = roll{8, 1, modifier(p.Stats.Constitution)}.roll()
 	}
+
+	p.Stats.AC = 10 + modifier(p.Stats.Dexterity)
 }

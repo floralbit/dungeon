@@ -79,13 +79,3 @@ func buildDungeonFloor() *zone {
 	zones[dungeonFloor1UUID] = z
 	return z
 }
-
-func (z *zone) findPlayerSpawn() (int, int) {
-	for _, obj := range z.WorldObjects {
-		if obj.Type == worldObjectTypePlayerSpawn {
-			return obj.X, obj.Y
-		}
-	}
-
-	return 0, 0
-}
