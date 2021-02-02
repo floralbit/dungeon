@@ -2,13 +2,13 @@ import React, { Component, useRef, useEffect, useState } from 'react';
 import {sendChat, setTyping} from '../redux/actions';
 
 function ChatLog(props) {
-  const {game: {zone, messages}} = props;
+  const {log: {log}} = props;
 
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current.scrollIntoView();
-  }, [JSON.stringify(messages)]); // seriously???
+  }, [JSON.stringify(log)]); // seriously???
 
   const [chatInput, setChatInput] = useState('');
 
@@ -31,14 +31,21 @@ function ChatLog(props) {
     <div id="chat-log-wrapper">
       <div id="chat-log">
         <ul>
-          {messages.map((message, i) => {
-              if (message.entity?.chat) {
-                const name = zone.entities[message.entity.uuid].name;
-                return <li key={i}><span style={{color: '#00ff00'}}>{name}</span>: {message.entity.chat.message}</li>;
+          {log.map((entry, i) => {
+              if (entry.chat) {
+                return <li key={i}><span style={{color: '#00ff00'}}>{entry.chat.name}</span>: {entry.chat.message}</li>;
               }
 
-              if (message.entity?.spawn) {
-                return <li key={i} style={{color: '#ff0000'}}>{message.entity.spawn.name} joined.</li>;
+              if (entry.spawn) {
+                return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.spawn.name}</span> entered the zone.</li>;
+              }
+
+              if (entry.despawn) {
+                return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.despawn.name}</span> left the zone.</li>;
+              }
+
+              if (entry.zone) {
+                return <li key={i} style={{color: '#adadad'}}>You entered {entry.zone.name}.</li>
               }
           })}
           <div ref={messagesEndRef} />
