@@ -7,7 +7,8 @@ import (
 type entityType string
 
 const (
-	entityTypePlayer = "player"
+	entityTypePlayer  = "player"
+	entityTypeMonster = "monster"
 )
 
 type entity interface {
