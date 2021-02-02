@@ -82,15 +82,15 @@ func buildDungeonFloor() *zone {
 	// register zone - TODO: this is a hack for now, fix up later
 	zones[dungeonFloor1UUID] = z
 
-	spawnMonsters(z)
+	spawnMonsters(level, z)
 
 	return z
 }
 
-func spawnMonsters(z *zone) {
-	for x := 0; x < z.Width; x++ {
-		for y := 0; y < z.Height; y++ {
-			if rand.Float32() < goblinLikelihood {
+func spawnMonsters(l *gen.Level, z *zone) {
+	for x := 0; x < l.Width; x++ {
+		for y := 0; y < l.Height; y++ {
+			if l.Objects[x][y] != nil && l.Objects[x][y].Type == gen.ObjectTypeMonsterSlot {
 				m := newMonster(monsterTypeGoblin)
 				m.X = x
 				m.Y = y

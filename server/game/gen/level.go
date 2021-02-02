@@ -25,6 +25,8 @@ const (
 type Level struct {
 	Width, Height int
 	Tiles         [][]*Tile // x, y indexed
+
+	Objects [][]*Object // x, y indexed
 }
 
 // BuildLevel ...
@@ -34,12 +36,19 @@ func BuildLevel() (*Level, error) {
 		Height: levelHeight,
 	}
 
+	// populate empty tiles
 	l.Tiles = make([][]*Tile, l.Width)
 	for x := 0; x < l.Width; x++ {
 		l.Tiles[x] = make([]*Tile, l.Height)
 		for y := 0; y < l.Height; y++ {
 			l.Tiles[x][y] = &Tile{X: x, Y: y}
 		}
+	}
+
+	// populate empty slots
+	l.Objects = make([][]*Object, l.Width)
+	for x := 0; x < l.Width; x++ {
+		l.Objects[x] = make([]*Object, l.Height)
 	}
 
 	// run wfc for level
@@ -67,6 +76,9 @@ func BuildLevel() (*Level, error) {
 	l.placeTorches()
 	l.placeEntrance()
 	l.placeExit()
+
+	// populate
+	l.placeMonsters()
 
 	l.saveImage("dungeon")
 
