@@ -32,15 +32,31 @@ func newPlayer(client *model.Client) *player {
 	return p
 }
 
+func (p *player) Send(event serverEvent) {
+	p.client.In <- event
+}
+
+func (p *player) Spawn(zoneUUID uuid.UUID) {
+	z := zones[zoneUUID]
+	for _, obj := range z.WorldObjects {
+		if obj.Type == worldObjectTypePlayerSpawn {
+			p.X = obj.X
+			p.Y = obj.Y
+			break
+		}
+	}
+	zones[startingZoneUUID].addEntity(p)
+}
+
+func (p *player) Despawn(becauseDeath bool) {
+	p.zone.removeEntity(p, becauseDeath)
+	delete(activePlayers, p.UUID)
+}
+
 func (p *player) Move(x, y int) {
 	t := p.zone.getTile(x, y)
-	if t == nil {
-		// edge of map, don't move
-		p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary
-		return
-	}
-
-	if t.Solid {
+	if t == nil || t.Solid {
+		// edge of map or solid, don't move
 		p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary
 		return
 	}
@@ -79,30 +95,46 @@ func (p *player) Move(x, y int) {
 	p.zone.send(newMoveEvent(p.Data(), x, y))
 }
 
-func (p *player) Spawn(zoneUUID uuid.UUID) {
-	z := zones[zoneUUID]
-	for _, obj := range z.WorldObjects {
-		if obj.Type == worldObjectTypePlayerSpawn {
-			p.X = obj.X
-			p.Y = obj.Y
-			break
-		}
+func (p *player) Attack(target entity) {
+	var damage int
+	var hit bool
+
+	if p.rollToHit(p.Data().Stats.AC) {
+		hit = true
+		damage = p.rollDamage()
 	}
-	zones[startingZoneUUID].addEntity(p)
+
+	// resolve damage
+	wouldDie := target.TakeDamage(damage)
+	p.zone.send(newAttackEvent(p.Data(), target.Data().UUID, hit, damage, target.Data().Stats.HP))
+
+	// handle death
+	if wouldDie {
+		target.Die()
+		p.GainExp(worthXP(target.Data().Stats.Level))
+	}
 }
 
-func (p *player) Despawn(becauseDeath bool) {
-	p.zone.removeEntity(p, becauseDeath)
-	delete(activePlayers, p.UUID)
+func (p *player) Die() {
+	p.zone.removeEntity(p, true)
+	p.rollStats()             // roll new stats cuz they're dead lol
+	p.Spawn(startingZoneUUID) // send em back to the starting zone
+	return
 }
 
-func (p *player) Send(event serverEvent) {
-	p.client.In <- event
+func (p *player) GainExp(xp int) {
+	originalLevel := p.Stats.Level
+	p.entityData.GainExp(xp)
+	if originalLevel != p.Stats.Level {
+		p.Send(newServerMessageEvent("You leveled up! You have a newfound strength coursing through your veins."))
+	}
+	p.Send(newUpdateEvent(p.Data())) // xp (& level) update
 }
 
 func (p *player) rollStats() {
 	p.Stats.Level = 1
 	p.Stats.XP = 0
+	p.Stats.XPToNextLevel = xpForLevel(2)
 
 	// use 3d6 for stats
 	r := roll{6, 3, 0} // 3d6 + 0
@@ -121,11 +153,4 @@ func (p *player) rollStats() {
 	p.Stats.HP = p.Stats.MaxHP
 
 	p.Stats.AC = 10 + modifier(p.Stats.Dexterity)
-}
-
-func (p *player) Die() {
-	p.zone.removeEntity(p, true)
-	p.rollStats()             // roll new stats cuz they're dead lol
-	p.Spawn(startingZoneUUID) // send em back to the starting zone
-	return
 }

@@ -32,7 +32,7 @@ function InfoBox(props) {
             <div id="info-box-wrapper">
                 <div id="info-box">
                     <strong>{player.name}</strong> <br />
-                    <strong>HP</strong>: {player.stats.hp}/{player.stats.max_hp} | <strong>AC</strong>: {player.stats.ac} | <strong>LV</strong>: {player.stats.level} | <strong>XP</strong>: {player.stats.xp} <br />
+                    <strong>HP</strong>: {player.stats.hp}/{player.stats.max_hp} | <strong>AC</strong>: {player.stats.ac} | <strong>LV</strong>: {player.stats.level} | <strong>XP</strong>: {player.stats.xp}/{player.stats.xp_to_next_level} <br />
                     <hr />
                     STR: {player.stats.strength} | DEX: {player.stats.dexterity} | CON: {player.stats.constitution} <br />
                     INT: {player.stats.intelligence} | WIS: {player.stats.wisdom} | CHA: {player.stats.charisma}
