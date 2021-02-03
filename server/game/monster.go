@@ -101,7 +101,11 @@ func (m *monster) move() {
 
 				path := a.FindPath(p2p, source, target)
 				if path != nil && path.Parent != nil {
-					m.Move(path.Parent.Row, path.Parent.Col) // move to first tile on path
+					if path.Parent.Row == e.Data().X && path.Parent.Col == e.Data().Y {
+						m.Attack(e)
+					} else {
+						m.Move(path.Parent.Row, path.Parent.Col) // move to first tile on path
+					}
 				}
 				return
 			}

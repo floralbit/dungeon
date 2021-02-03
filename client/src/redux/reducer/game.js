@@ -87,6 +87,25 @@ export default function gameReducer(state = initialState, action) {
                     }
                 };
             }
+
+            if (data.entity?.attack) {
+                return {
+                    ...state,
+                    zone: {
+                        ...state.zone,
+                        entities: {
+                            ...state.zone.entities,
+                            [data.entity.attack.target]: {
+                                ...state.zone.entities[data.entity.attack.target],
+                                stats: {
+                                    ...state.zone.entities[data.entity.attack.target].stats,
+                                    hp: data.entity.attack.target_hp,
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // none of the special handling, just append to log

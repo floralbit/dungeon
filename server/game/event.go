@@ -12,11 +12,12 @@ type serverEvent struct {
 type entityEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
-	Spawn   *entityData      `json:"spawn,omitempty"`
-	Despawn bool             `json:"despawn"`
-	Die     bool             `json:"die"`
-	Move    *entityMoveEvent `json:"move,omitempty"`
-	Chat    *entityChatEvent `json:"chat,omitempty"`
+	Spawn   *entityData        `json:"spawn,omitempty"`
+	Despawn bool               `json:"despawn"`
+	Die     bool               `json:"die"`
+	Move    *entityMoveEvent   `json:"move,omitempty"`
+	Chat    *entityChatEvent   `json:"chat,omitempty"`
+	Attack  *entityAttackEvent `json:"attack,omitemtpy"`
 }
 
 type entityMoveEvent struct {
@@ -26,6 +27,13 @@ type entityMoveEvent struct {
 
 type entityChatEvent struct {
 	Message string `json:"message"`
+}
+
+type entityAttackEvent struct {
+	Target   uuid.UUID `json:"target"`
+	TargetHP int       `json:"target_hp"`
+	Hit      bool      `json:"hit"`
+	Damage   int       `json:"damage"`
 }
 
 type zoneEvent struct {
@@ -90,6 +98,20 @@ func newChatEvent(e *entityData, message string) serverEvent {
 			UUID: e.UUID,
 			Chat: &entityChatEvent{
 				Message: message,
+			},
+		},
+	}
+}
+
+func newAttackEvent(e *entityData, target uuid.UUID, hit bool, damage int, targetHP int) serverEvent {
+	return serverEvent{
+		Entity: &entityEvent{
+			UUID: e.UUID,
+			Attack: &entityAttackEvent{
+				Target:   target,
+				Hit:      hit,
+				Damage:   damage,
+				TargetHP: targetHP,
 			},
 		},
 	}

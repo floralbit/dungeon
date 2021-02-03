@@ -85,6 +85,21 @@ export default function logReducer(state = initialState, action) {
             }
         }
 
+        if (data.entity?.attack) {
+            return {
+                ...state,
+                log: [
+                    ...state.log,
+                    {attack: {
+                        attacker: state.uuidToName[data.entity.uuid],
+                        target: state.uuidToName[data.entity.attack.target],
+                        hit: data.entity.attack.hit,
+                        damage: data.entity.attack.damage,
+                    }}
+                ]
+            }
+        }
+
         if (data.message?.message) {
             return {
                 ...state,

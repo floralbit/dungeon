@@ -15,6 +15,7 @@ type entity interface {
 	Move(int, int)
 	Spawn(uuid.UUID)
 	Despawn()
+	Attack(entity)
 
 	Update(dt float64)
 	Send(serverEvent)
@@ -64,6 +65,29 @@ func (e *entityData) Spawn(zoneUUID uuid.UUID) {
 
 func (e *entityData) Despawn() {
 	e.zone.removeEntity(e)
+}
+
+func (e *entityData) Attack(target entity) {
+	var damage int
+	var hit bool
+
+	// resolve hit
+	toHit := roll{Sides: 20, N: 1, Plus: modifier(e.Stats.Strength)}.roll() // TODO: swap modifier based on weapon
+	if toHit >= e.Data().Stats.AC {
+		hit = true
+		damage = roll{Sides: 3, N: 1, Plus: modifier(e.Stats.Strength)}.roll()
+		if damage <= 0 {
+			damage = 1 // minimum 1 dmg
+		}
+	}
+
+	// resolve damange
+	target.Data().Stats.HP -= damage
+	e.zone.send(newAttackEvent(e, target.Data().UUID, hit, damage, target.Data().Stats.HP))
+
+	// handle death
+	if target.Data().Stats.HP <= 0 {
+	}
 }
 
 func (e *entityData) Update(dt float64) {

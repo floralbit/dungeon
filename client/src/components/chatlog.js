@@ -48,6 +48,13 @@ function ChatLog(props) {
                 return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.despawn.name}</span> left the zone.</li>;
               }
 
+              if (entry.attack) {
+                if (entry.attack.hit) {
+                  return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.attack.attacker}</span> hit <span style={{color: '#00ff00'}}>{entry.attack.target}</span> for <span style={{color: '#ff0000'}}>{entry.attack.damage}</span> damage!</li>
+                }
+                return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.attack.attacker}</span> missed <span style={{color: '#00ff00'}}>{entry.attack.target}</span>!</li>
+              }
+
               if (entry.zone) {
                 return <li key={i} style={{color: '#adadad'}}>You entered {entry.zone.name}.</li>
               }
