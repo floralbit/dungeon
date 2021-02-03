@@ -55,6 +55,10 @@ function ChatLog(props) {
                 return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.attack.attacker}</span> missed <span style={{color: '#00ff00'}}>{entry.attack.target}</span>!</li>
               }
 
+              if (entry.die) {
+                return <li key={i} style={{color: '#adadad'}}><span style={{color: '#00ff00'}}>{entry.die.name}</span> was slain.</li>
+              }
+
               if (entry.zone) {
                 return <li key={i} style={{color: '#adadad'}}>You entered {entry.zone.name}.</li>
               }

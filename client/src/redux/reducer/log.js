@@ -56,8 +56,8 @@ export default function logReducer(state = initialState, action) {
             };
         }
 
-        if (data.entity?.despawn) {
-            if (data.entity.uuid == state.accountUUID) {
+        if (data.entity?.despawn && !data.entity.die) {
+            if (data.entity.uuid === state.accountUUID) {
                 return state;
             }
 
@@ -95,6 +95,18 @@ export default function logReducer(state = initialState, action) {
                         target: state.uuidToName[data.entity.attack.target],
                         hit: data.entity.attack.hit,
                         damage: data.entity.attack.damage,
+                    }}
+                ]
+            }
+        }
+
+        if (data.entity?.die) {
+            return {
+                ...state,
+                log: [
+                    ...state.log,
+                    {die: {
+                        name: state.uuidToName[data.entity.uuid],
                     }}
                 ]
             }

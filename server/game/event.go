@@ -62,20 +62,12 @@ func newSpawnEvent(e *entityData) serverEvent {
 	}
 }
 
-func newDespawnEvent(e *entityData) serverEvent {
+func newDespawnEvent(e *entityData, becauseDeath bool) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
 			UUID:    e.UUID,
 			Despawn: true,
-		},
-	}
-}
-
-func newDieEvent(e *entityData) serverEvent {
-	return serverEvent{
-		Entity: &entityEvent{
-			UUID: e.UUID,
-			Die:  true,
+			Die:     becauseDeath,
 		},
 	}
 }

@@ -14,8 +14,9 @@ const (
 type entity interface {
 	Move(int, int)
 	Spawn(uuid.UUID)
-	Despawn()
+	Despawn(bool)
 	Attack(entity)
+	Die()
 
 	Update(dt float64)
 	Send(serverEvent)
@@ -63,8 +64,12 @@ func (e *entityData) Spawn(zoneUUID uuid.UUID) {
 	z.addEntity(e)
 }
 
-func (e *entityData) Despawn() {
-	e.zone.removeEntity(e)
+func (e *entityData) Despawn(becauseDeath bool) {
+	e.zone.removeEntity(e, becauseDeath)
+}
+
+func (e *entityData) Die() {
+	e.Despawn(true)
 }
 
 func (e *entityData) Attack(target entity) {
@@ -87,6 +92,7 @@ func (e *entityData) Attack(target entity) {
 
 	// handle death
 	if target.Data().Stats.HP <= 0 {
+		target.Die()
 	}
 }
 

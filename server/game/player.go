@@ -48,10 +48,18 @@ func (p *player) Move(x, y int) {
 	objs := p.zone.getWorldObjects(x, y)
 	for _, obj := range objs {
 		if obj.WarpTarget != nil {
-			p.zone.removeEntity(p)
+			p.zone.removeEntity(p, false)
 			zones[obj.WarpTarget.ZoneUUID].addEntity(p)
 			p.X = obj.WarpTarget.X
 			p.Y = obj.WarpTarget.Y
+			return
+		}
+	}
+
+	for _, e := range p.zone.Entities {
+		if e.Data().X == x && e.Data().Y == y {
+			p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary, because attacking
+			p.Attack(e)
 			return
 		}
 	}
@@ -71,12 +79,11 @@ func (p *player) Spawn(zoneUUID uuid.UUID) {
 			break
 		}
 	}
-	p.Send(newServerMessageEvent(motd)) // send message of the day
 	zones[startingZoneUUID].addEntity(p)
 }
 
-func (p *player) Despawn() {
-	p.zone.removeEntity(p)
+func (p *player) Despawn(becauseDeath bool) {
+	p.zone.removeEntity(p, becauseDeath)
 	delete(activePlayers, p.UUID)
 }
 
@@ -104,4 +111,11 @@ func (p *player) rollStats() {
 	}
 
 	p.Stats.AC = 10 + modifier(p.Stats.Dexterity)
+}
+
+func (p *player) Die() {
+	p.zone.removeEntity(p, true)
+	p.rollStats()             // roll new stats cuz they're dead lol
+	p.Spawn(startingZoneUUID) // send em back to the starting zone
+	return
 }

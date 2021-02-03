@@ -52,9 +52,9 @@ func (z *zone) addEntity(e entity) {
 	e.Send(newZoneLoadEvent(z)) // send entity the zone data
 }
 
-func (z *zone) removeEntity(e entity) {
+func (z *zone) removeEntity(e entity, becauseDeath bool) {
 	delete(z.Entities, e.Data().UUID)
-	z.send(newDespawnEvent(e.Data()))
+	z.send(newDespawnEvent(e.Data(), becauseDeath))
 }
 
 func (z *zone) send(event serverEvent) {

@@ -59,10 +59,11 @@ func update(dt float64) {
 func handleJoinEvent(e model.ClientEvent) {
 	p := newPlayer(e.Sender) // TODO: pull from storage
 	p.Spawn(startingZoneUUID)
+	p.Send(newServerMessageEvent(motd)) // send message of the day
 }
 
 func handleLeaveEvent(e model.ClientEvent) {
-	activePlayers[e.Sender.Account.UUID].Despawn()
+	activePlayers[e.Sender.Account.UUID].Despawn(false)
 }
 
 func handleChatEvent(e model.ClientEvent) {
