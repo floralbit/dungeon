@@ -20,7 +20,8 @@ type monster struct {
 type monsterType string
 
 const (
-	monsterTypeGoblin = "goblin"
+	monsterTypeGoblin   = "goblin"
+	monsterTypeSkeleton = "skeleton"
 )
 
 func newMonster(t monsterType) *monster {
@@ -36,8 +37,8 @@ func newMonster(t monsterType) *monster {
 			Tile: template.Tile,
 			Type: entityTypeMonster,
 			Stats: stats{
-				Level:        template.HD,
-				AC:           template.AC,
+				Level: template.Level,
+
 				Strength:     template.Strength,
 				Dexterity:    template.Dexterity,
 				Constitution: template.Constitution,
@@ -53,8 +54,9 @@ func newMonster(t monsterType) *monster {
 	// roll hp based on hd
 	m.Stats.HP = 0
 	for m.Stats.HP <= 0 {
-		m.Stats.HP = roll{8, template.HD, 0}.roll()
+		m.Stats.HP = roll{8, template.Level, modifier(m.Stats.Constitution)}.roll()
 	}
+	m.Stats.AC = 10 + modifier(m.Stats.Dexterity)
 
 	return m
 }

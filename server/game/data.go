@@ -83,8 +83,7 @@ type monsterTemplate struct {
 	MoveSpeed    float64 `json:"move_speed"`
 	AgroDistance float64 `json:"agro_distance"`
 
-	HD int `json:"hd"`
-	AC int `json:"ac"`
+	Level int `json:"level"`
 
 	Strength     int `json:"strength"`
 	Dexterity    int `json:"dexterity"`
@@ -92,13 +91,6 @@ type monsterTemplate struct {
 	Intelligence int `json:"intelligence"`
 	Wisdom       int `json:"wisdom"`
 	Charisma     int `json:"charisma"`
-
-	Attack struct {
-		Name  string `json:"name"`
-		N     int    `json:"n"`
-		Sides int    `json:"sides"`
-		Plus  int    `json:"plus"`
-	} `json:"attack"`
 }
 
 func loadZones() map[uuid.UUID]*zone {

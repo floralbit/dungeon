@@ -12,7 +12,8 @@ var dungeonFloor1UUID = uuid.MustParse("6a67086c-eb9c-44c1-85b1-a140df7e4272")
 var dungeonFloor1 = buildDungeonFloor() // TODO: put this logic into game loop
 
 const (
-	goblinLikelihood = .005 // .5%
+	goblinLikelihood   = .5 // 50%
+	skeletonLikelihood = .5 // 50%
 )
 
 var genTileTypeToTileID = map[gen.TileType][]int{
@@ -91,7 +92,15 @@ func spawnMonsters(l *gen.Level, z *zone) {
 	for x := 0; x < l.Width; x++ {
 		for y := 0; y < l.Height; y++ {
 			if l.Objects[x][y] != nil && l.Objects[x][y].Type == gen.ObjectTypeMonsterSlot {
-				m := newMonster(monsterTypeGoblin)
+				var m *monster
+				for m == nil {
+					if rand.Float32() < goblinLikelihood {
+						m = newMonster(monsterTypeGoblin)
+					} else if rand.Float32() < skeletonLikelihood {
+						m = newMonster(monsterTypeSkeleton)
+					}
+				}
+
 				m.X = x
 				m.Y = y
 				z.addEntity(m)

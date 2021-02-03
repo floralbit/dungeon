@@ -4,23 +4,32 @@
     "tile": 44,
 
     "move_speed": 0.5,
-    "agro_distance": 6,
+    "agro_distance": 12,
 
-    "hd": 1,
-    "ac": 8,
+    "level": 1,
 
     "strength": 8,
-    "dexterity": 14,
+    "dexterity": 8,
     "constitution": 10,
-    "intelligence": 10,
+    "intelligence": 8,
     "wisdom": 8,
-    "charisma": 8,
+    "charisma": 8
+  },
 
-    "attack": {
-      "name": "Scimitar",
-      "n": 1,
-      "sides": 6,
-      "plus": 0
-    }
+  "skeleton": {
+    "name": "Skeleton",
+    "tile": 51,
+
+    "move_speed": 0.75,
+    "agro_distance": 20,
+
+    "level": 2,
+
+    "strength": 10,
+    "dexterity": 14,
+    "constitution": 14,
+    "intelligence": 6,
+    "wisdom": 6,
+    "charisma": 6
   }
 }

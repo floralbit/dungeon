@@ -1,0 +1,46 @@
+{
+  "fist": {
+    "name": "Fist",
+    "tile": 216,
+    "str_mod": true,
+    "dex_mod": false,
+
+    "Sides": 3,
+    "N": 1,
+    "Plus": 0
+  },
+
+
+  "dagger": {
+    "name": "Dagger",
+    "tile": 118,
+    "str_mod": false,
+    "dex_mod": true,
+
+    "Sides": 4,
+    "N": 1,
+    "Plus": 0
+  },
+
+  "short_sword": {
+    "name": "Short Sword",
+    "tile": 102,
+    "str_mod": true,
+    "dex_mod": false,
+
+    "Sides": 6,
+    "N": 1,
+    "Plus": 0
+  },
+
+  "long_sword": {
+    "name": "Longsword",
+    "tile": 100,
+    "str_mod": true,
+    "dex_mod": false,
+
+    "Sides": 8,
+    "N": 1,
+    "Plus": 0
+  }
+}
