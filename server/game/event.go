@@ -12,6 +12,7 @@ type serverEvent struct {
 type entityEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
+	Update  *entityData        `json:"update,omitemtpy"`
 	Spawn   *entityData        `json:"spawn,omitempty"`
 	Despawn bool               `json:"despawn"`
 	Die     bool               `json:"die"`
@@ -51,6 +52,15 @@ type worldObjectEvent struct {
 
 type serverMessageEvent struct {
 	Message string `json:"message"`
+}
+
+func newUpdateEvent(e *entityData) serverEvent {
+	return serverEvent{
+		Entity: &entityEvent{
+			UUID:   e.UUID,
+			Update: e,
+		},
+	}
 }
 
 func newSpawnEvent(e *entityData) serverEvent {

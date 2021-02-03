@@ -56,6 +56,7 @@ func newMonster(t monsterType) *monster {
 	for m.Stats.HP <= 0 {
 		m.Stats.HP = roll{8, template.Level, modifier(m.Stats.Constitution)}.roll()
 	}
+	m.Stats.MaxHP = m.Stats.HP
 	m.Stats.AC = 10 + modifier(m.Stats.Dexterity)
 
 	return m

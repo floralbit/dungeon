@@ -18,6 +18,9 @@ type entity interface {
 	Attack(entity)
 	Die()
 
+	Heal(int)
+	HealFull()
+
 	Update(dt float64)
 	Send(serverEvent)
 
@@ -40,8 +43,9 @@ type entityData struct {
 
 type stats struct {
 	Level int `json:"level"`
+	MaxHP int `json:"max_hp"`
 	HP    int `json:"hp"`
-	XP    int `json:"xp"'`
+	XP    int `json:"xp"`
 	AC    int `json:"ac"`
 
 	Strength     int `json:"strength"`
@@ -94,6 +98,17 @@ func (e *entityData) Attack(target entity) {
 	if target.Data().Stats.HP <= 0 {
 		target.Die()
 	}
+}
+
+func (e *entityData) Heal(amount int) {
+	e.Stats.HP += amount
+	if e.Stats.HP > e.Stats.MaxHP {
+		e.Stats.HP = e.Stats.MaxHP
+	}
+}
+
+func (e *entityData) HealFull() {
+	e.Stats.HP = e.Stats.MaxHP
 }
 
 func (e *entityData) Update(dt float64) {

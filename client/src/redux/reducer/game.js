@@ -58,6 +58,19 @@ export default function gameReducer(state = initialState, action) {
                 };
             }
 
+            if (data.entity?.update) {
+                return {
+                    ...state,
+                    zone: {
+                        ...state.zone,
+                        entities: {
+                            ...state.zone.entities,
+                            [data.entity.uuid]: data.entity.update,
+                        }
+                    }
+                };
+            }
+
             if (data.entity?.despawn) {
                 const {[data.entity.uuid]: value, ...withoutEntity} = state.zone.entities;
                 return {

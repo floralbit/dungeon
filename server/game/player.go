@@ -54,6 +54,15 @@ func (p *player) Move(x, y int) {
 			p.Y = obj.WarpTarget.Y
 			return
 		}
+		if obj.HealZone != nil {
+			if obj.HealZone.Full {
+				p.HealFull()
+				p.Send(newUpdateEvent(p.Data()))
+				p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary
+				p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light."))
+				return
+			}
+		}
 	}
 
 	for _, e := range p.zone.Entities {
@@ -104,11 +113,12 @@ func (p *player) rollStats() {
 	p.Stats.Wisdom = r.roll()
 	p.Stats.Charisma = r.roll()
 
-	// hit dice for players is a d8, so HP = 1d8 + CON
-	p.Stats.HP = 0 // reset, this could be called on death
-	for p.Stats.HP <= 0 {
-		p.Stats.HP = roll{8, 1, modifier(p.Stats.Constitution)}.roll()
+	// hit dice for players is a d8, so HP = 8 + CON (1d8 + CON on level)
+	p.Stats.MaxHP = 8 + modifier(p.Stats.Constitution)
+	if p.Stats.MaxHP <= 0 {
+		p.Stats.MaxHP = 1
 	}
+	p.Stats.HP = p.Stats.MaxHP
 
 	p.Stats.AC = 10 + modifier(p.Stats.Dexterity)
 }

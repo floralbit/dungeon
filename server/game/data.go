@@ -159,7 +159,7 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 			for _, obj := range layer.Objects {
 				var UUID uuid.UUID
 
-				var hasWarpTarget bool
+				var hasWarpTarget, hasFullHeal bool
 				var warpTargetUUID uuid.UUID
 				var warpTargetX, warpTargetY int
 
@@ -189,6 +189,12 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 							log.Fatal(err)
 						}
 					}
+					if prop.Name == "fullHeal" {
+						err := json.Unmarshal(prop.Value, &hasFullHeal)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
 				}
 
 				z.WorldObjects[UUID] = &worldObject{
@@ -205,6 +211,11 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 						ZoneUUID: warpTargetUUID,
 						X:        warpTargetX,
 						Y:        warpTargetY,
+					}
+				}
+				if hasFullHeal {
+					z.WorldObjects[UUID].HealZone = &healZone{
+						Full: true,
 					}
 				}
 			}
