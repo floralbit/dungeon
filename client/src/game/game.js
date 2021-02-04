@@ -3,6 +3,9 @@ import {lerp} from './util';
 import {sendMove, setHovering} from '../redux/actions';
 
 const ENTITY_LERP_SPEED = 18;
+const LERP_MIN_DIST = 0.3;
+const LERP_CAM_MAX_DIST = 30;
+const LERP_MAX_DIST = 3;
 
 class Game {
     constructor(canvas, ctx, store) {
@@ -49,11 +52,15 @@ class Game {
                 const targetCamY = Math.floor((player.y * TILE_SIZE) - (this.canvas.height / this.camera.zoom)/2);
                 this.camera.x = lerp(this.camera.x, targetCamX, this.cameraSpeed * dt);
                 this.camera.y = lerp(this.camera.y, targetCamY, this.cameraSpeed * dt);
+                
                 // camera correction if we get close (avoid artifacts)
-                if (Math.abs(this.camera.x - targetCamX) < .3) {
+                const lerpDistX = Math.abs(this.camera.x - targetCamX);
+                const lerpDistY = Math.abs(this.camera.y - targetCamY);
+
+                if (lerpDistX < LERP_MIN_DIST || lerpDistX > LERP_CAM_MAX_DIST) {
                     this.camera.x = targetCamX; 
                 }
-                if (Math.abs(this.camera.y - targetCamY) < .3) {
+                if (lerpDistY < LERP_MIN_DIST || lerpDistY > LERP_CAM_MAX_DIST) {
                     this.camera.y = targetCamY;
                 }
 
@@ -107,10 +114,13 @@ class Game {
                 }
                 this.entityLerpMap[entityUUID].x = lerp(this.entityLerpMap[entityUUID].x, entity.x, ENTITY_LERP_SPEED * dt);
                 this.entityLerpMap[entityUUID].y = lerp(this.entityLerpMap[entityUUID].y, entity.y, ENTITY_LERP_SPEED * dt);
-                if (Math.abs(entity.x - this.entityLerpMap[entityUUID].x) < .3) {
+                const lerpDistX = Math.abs(entity.x - this.entityLerpMap[entityUUID].x);
+                const lerpDistY = Math.abs(entity.y - this.entityLerpMap[entityUUID].y);
+
+                if (lerpDistX < LERP_MIN_DIST || lerpDistX > LERP_MAX_DIST) {
                     this.entityLerpMap[entityUUID].x = entity.x
                 }
-                if (Math.abs(entity.y - this.entityLerpMap[entityUUID].y) < .3) {
+                if (lerpDistY < LERP_MIN_DIST || lerpDistY > LERP_MAX_DIST) {
                     this.entityLerpMap[entityUUID].y = entity.y
                 }
             }

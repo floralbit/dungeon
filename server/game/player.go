@@ -116,6 +116,8 @@ func (p *player) Attack(target entity) {
 }
 
 func (p *player) Die() {
+	p.Send(newServerMessageEvent("You died."))
+	p.Send(newServerMessageEvent("Your soul enters a new body. You are reborn."))
 	p.zone.removeEntity(p, true)
 	p.rollStats()             // roll new stats cuz they're dead lol
 	p.Spawn(startingZoneUUID) // send em back to the starting zone
