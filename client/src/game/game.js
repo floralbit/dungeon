@@ -2,6 +2,8 @@ import Tilemap, {TILE_SIZE} from './tilemap';
 import {lerp} from './util';
 import {sendMove, setHovering} from '../redux/actions';
 
+const ENTITY_LERP_SPEED = 18;
+
 class Game {
     constructor(canvas, ctx, store) {
         this.canvas = canvas;
@@ -19,6 +21,8 @@ class Game {
 
         this.movementTimer = 0.0;
         this.movementTime = 0.25; // in s, TODO: populate from server
+
+        this.entityLerpMap = {};
     }
 
     load() {
@@ -95,6 +99,21 @@ class Game {
                     }
                 }
             }
+
+            for (let entityUUID in game.zone.entities) {
+                const entity = game.zone.entities[entityUUID];
+                if (!(entityUUID in this.entityLerpMap)) {
+                    this.entityLerpMap[entityUUID] = {x: entity.x, y: entity.y};
+                }
+                this.entityLerpMap[entityUUID].x = lerp(this.entityLerpMap[entityUUID].x, entity.x, ENTITY_LERP_SPEED * dt);
+                this.entityLerpMap[entityUUID].y = lerp(this.entityLerpMap[entityUUID].y, entity.y, ENTITY_LERP_SPEED * dt);
+                if (Math.abs(entity.x - this.entityLerpMap[entityUUID].x) < .3) {
+                    this.entityLerpMap[entityUUID].x = entity.x
+                }
+                if (Math.abs(entity.y - this.entityLerpMap[entityUUID].y) < .3) {
+                    this.entityLerpMap[entityUUID].y = entity.y
+                }
+            }
         }
     }
 
@@ -122,7 +141,8 @@ class Game {
 
             for (let entityUUID in game.zone.entities) {
                 const entity = game.zone.entities[entityUUID];
-                this.tilemap.drawTile(this.ctx, entity.tile, entity.x, entity.y);
+                const lerpData = this.entityLerpMap[entityUUID];
+                this.tilemap.drawTile(this.ctx, entity.tile, lerpData.x, lerpData.y);
             }
         }
 
