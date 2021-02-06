@@ -42,7 +42,7 @@ function Landing(props) {
 
   return (
     <div>
-      <h1>Dungeon Online</h1>
+      <h1>Vault of Splendor</h1>
 
       <div id="wrapper">
         <div className="box">
@@ -54,7 +54,8 @@ function Landing(props) {
         <div className="box-no-border">
           {tab === 'about' &&
             <div>
-              Play my cool ass game dude. It's cool.
+              Beside the quaint town of Easthallow lies a dark and treacherous ruin, the <strong>Barrow of the Eternal King</strong>.
+              Can you survive long enough to reach the Vault of Splendor, and all of the riches that await inside?
             </div>
           }
 

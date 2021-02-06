@@ -57,9 +57,9 @@ func update(dt float64) {
 }
 
 func handleJoinEvent(e model.ClientEvent) {
-	p := newPlayer(e.Sender) // TODO: pull from storage
-	p.Spawn(startingZoneUUID)
+	p := newPlayer(e.Sender)            // TODO: pull from storage
 	p.Send(newServerMessageEvent(motd)) // send message of the day
+	p.Spawn(startingZoneUUID)
 }
 
 func handleLeaveEvent(e model.ClientEvent) {

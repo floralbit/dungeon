@@ -1,3 +1,3 @@
 package game
 
-const motd = "Welcome to Dungeon Online adventurer! Stay safe."
+const motd = "Welcome to Vault of Splendor adventurer! Stay safe."
