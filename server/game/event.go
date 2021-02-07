@@ -52,6 +52,7 @@ type worldObjectEvent struct {
 
 type serverMessageEvent struct {
 	Message string `json:"message"`
+	IsError bool   `json:"is_error"`
 }
 
 func newUpdateEvent(e *entityData) serverEvent {
@@ -146,10 +147,11 @@ func newWorldObjectDespawnEvent(o *worldObject) serverEvent {
 	}
 }
 
-func newServerMessageEvent(message string) serverEvent {
+func newServerMessageEvent(message string, isError bool) serverEvent {
 	return serverEvent{
 		Message: &serverMessageEvent{
 			Message: message,
+			IsError: isError,
 		},
 	}
 }

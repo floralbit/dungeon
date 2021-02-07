@@ -5,7 +5,10 @@ import (
 	"github.com/google/uuid"
 )
 
-const warriorTileID = 21
+const (
+	warriorTileID    = 21
+	maxValidMoveDist = 3
+)
 
 var activePlayers = map[uuid.UUID]*player{}
 
@@ -54,6 +57,12 @@ func (p *player) Despawn(becauseDeath bool) {
 }
 
 func (p *player) Move(x, y int) {
+	if dist(p.X, p.Y, x, y) > maxValidMoveDist {
+		// can't move, probably a move race with zone warping
+		p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary
+		return
+	}
+
 	t := p.zone.getTile(x, y)
 	if t == nil || t.Solid {
 		// edge of map or solid, don't move
@@ -75,14 +84,14 @@ func (p *player) Move(x, y int) {
 				p.HealFull()
 				p.Send(newUpdateEvent(p.Data()))
 				p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary
-				p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light."))
+				p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light.", false))
 				return
 			}
 		}
 	}
 
 	for _, e := range p.zone.Entities {
-		if e.Data().X == x && e.Data().Y == y {
+		if p != e && e.Data().X == x && e.Data().Y == y {
 			p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary, because attacking
 			p.Attack(e)
 			return
@@ -116,8 +125,8 @@ func (p *player) Attack(target entity) {
 }
 
 func (p *player) Die() {
-	p.Send(newServerMessageEvent("You died."))
-	p.Send(newServerMessageEvent("Your soul enters a new body. You are reborn."))
+	p.Send(newServerMessageEvent("You died.", false))
+	p.Send(newServerMessageEvent("Your soul enters a new body. You are reborn.", false))
 	p.zone.removeEntity(p, true)
 	p.rollStats()             // roll new stats cuz they're dead lol
 	p.Spawn(startingZoneUUID) // send em back to the starting zone
@@ -128,7 +137,7 @@ func (p *player) GainExp(xp int) {
 	originalLevel := p.Stats.Level
 	p.entityData.GainExp(xp)
 	if originalLevel != p.Stats.Level {
-		p.Send(newServerMessageEvent("You leveled up! You have a newfound strength coursing through your veins."))
+		p.Send(newServerMessageEvent("You leveled up! You have a newfound strength coursing through your veins.", false))
 	}
 	p.Send(newUpdateEvent(p.Data())) // xp (& level) update
 }

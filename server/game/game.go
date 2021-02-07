@@ -57,21 +57,36 @@ func update(dt float64) {
 }
 
 func handleJoinEvent(e model.ClientEvent) {
-	p := newPlayer(e.Sender)            // TODO: pull from storage
-	p.Send(newServerMessageEvent(motd)) // send message of the day
+	_, ok := activePlayers[e.Sender.Account.UUID]
+	if ok {
+		return // player already logged in, TODO: handle gracefully ?
+	}
+
+	p := newPlayer(e.Sender)                   // TODO: pull from storage
+	p.Send(newServerMessageEvent(motd, false)) // send message of the day
 	p.Spawn(startingZoneUUID)
 }
 
 func handleLeaveEvent(e model.ClientEvent) {
-	activePlayers[e.Sender.Account.UUID].Despawn(false)
+	p, ok := activePlayers[e.Sender.Account.UUID]
+	if !ok {
+		return
+	}
+	p.Despawn(false)
 }
 
 func handleChatEvent(e model.ClientEvent) {
-	p := activePlayers[e.Sender.Account.UUID]
+	p, ok := activePlayers[e.Sender.Account.UUID]
+	if !ok {
+		return // ignore inactive players, TODO: send an error?
+	}
 	p.Data().zone.send(newChatEvent(p.Data(), e.Chat.Message))
 }
 
 func handleMoveEvent(e model.ClientEvent) {
-	p := activePlayers[e.Sender.Account.UUID]
+	p, ok := activePlayers[e.Sender.Account.UUID]
+	if !ok {
+		return // ignore inactive players
+	}
 	p.Move(e.Move.X, e.Move.Y)
 }
