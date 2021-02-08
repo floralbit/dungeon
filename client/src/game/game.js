@@ -5,7 +5,7 @@ import {sendMove, setHovering} from '../redux/actions';
 const ENTITY_LERP_SPEED = 18;
 const LERP_MIN_DIST = 0.3;
 const LERP_CAM_MAX_DIST = 30;
-const LERP_MAX_DIST = 3;
+const LERP_MAX_DIST = 5;
 
 class Game {
     constructor(canvas, ctx, store) {
@@ -17,7 +17,7 @@ class Game {
             x: 0, y:0,
             zoom: 4,
         };
-        this.cameraSpeed = 10;
+        this.cameraSpeed = 8;
 
         this.renderedZoneUUID = undefined;
         this.zoneCanvas = document.createElement('canvas');
