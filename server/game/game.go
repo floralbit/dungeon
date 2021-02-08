@@ -29,6 +29,12 @@ func Run() {
 	}
 }
 
+func update(dt float64) {
+	for _, z := range zones {
+		z.update(dt)
+	}
+}
+
 func processEvent(e model.ClientEvent) {
 	switch {
 	case e.Join != nil:
@@ -42,20 +48,14 @@ func processEvent(e model.ClientEvent) {
 	}
 }
 
-func update(dt float64) {
-	for _, z := range zones {
-		z.update(dt)
-	}
-}
-
 func handleJoinEvent(e model.ClientEvent) {
 	_, ok := activePlayers[e.Sender.Account.UUID]
 	if ok {
 		return // player already logged in, TODO: handle gracefully ?
 	}
 
-	p := newPlayer(e.Sender)                   // TODO: pull from storage
-	p.Send(newServerMessageEvent(motd, false)) // send message of the day
+	p := newPlayer(e.Sender)            // TODO: pull from storage
+	p.Send(newServerMessageEvent(motd)) // send message of the day
 	p.Spawn(startingZoneUUID)
 }
 

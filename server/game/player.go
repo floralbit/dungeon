@@ -84,7 +84,7 @@ func (p *player) Move(x, y int) {
 				p.HealFull()
 				p.Send(newUpdateEvent(p.Data()))
 				p.Send(newMoveEvent(p.Data(), p.X, p.Y)) // tell them they're stationary
-				p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light.", false))
+				p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light."))
 				return
 			}
 		}
@@ -125,8 +125,8 @@ func (p *player) Attack(target entity) {
 }
 
 func (p *player) Die() {
-	p.Send(newServerMessageEvent("You died.", false))
-	p.Send(newServerMessageEvent("Your soul enters a new body. You are reborn.", false))
+	p.Send(newServerMessageEvent("You died."))
+	p.Send(newServerMessageEvent("Your soul enters a new body. You are reborn."))
 	p.zone.removeEntity(p, true)
 	p.rollStats()             // roll new stats cuz they're dead lol
 	p.Spawn(startingZoneUUID) // send em back to the starting zone
@@ -137,7 +137,7 @@ func (p *player) GainExp(xp int) {
 	originalLevel := p.Stats.Level
 	p.entityData.GainExp(xp)
 	if originalLevel != p.Stats.Level {
-		p.Send(newServerMessageEvent("You leveled up! You have a newfound strength coursing through your veins.", false))
+		p.Send(newServerMessageEvent("You leveled up! You have a newfound strength coursing through your veins."))
 	}
 	p.Send(newUpdateEvent(p.Data())) // xp (& level) update
 }
