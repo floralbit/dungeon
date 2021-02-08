@@ -17,36 +17,28 @@ func Run() {
 	ticker := time.NewTicker(tickLength * time.Millisecond)
 	lastTime := time.Now()
 
-	for now := range ticker.C {
-		dt := now.Sub(lastTime).Seconds()
-		lastTime = now
-
-		processEvents(dt)
-		update(dt)
+	for {
+		select {
+		case now := <-ticker.C:
+			dt := now.Sub(lastTime).Seconds()
+			lastTime = now
+			update(dt)
+		case e := <-In:
+			processEvent(e)
+		}
 	}
 }
 
-func processEvents(dt float64) {
-	// do we need a timeout timer in here too? we might starve the gameloop
-	// if the inbounds are so fast that we never drain the channel
-	for {
-		select {
-		case e := <-In:
-			// TODO: do something about this nasty dispatch, will be a pain to maintain
-			// TODO: notify others when someone joins (login) or leaves
-			switch {
-			case e.Join != nil:
-				handleJoinEvent(e)
-			case e.Leave != nil:
-				handleLeaveEvent(e)
-			case e.Chat != nil:
-				handleChatEvent(e)
-			case e.Move != nil:
-				handleMoveEvent(e)
-			}
-		default:
-			return // In is empty
-		}
+func processEvent(e model.ClientEvent) {
+	switch {
+	case e.Join != nil:
+		handleJoinEvent(e)
+	case e.Leave != nil:
+		handleLeaveEvent(e)
+	case e.Chat != nil:
+		handleChatEvent(e)
+	case e.Move != nil:
+		handleMoveEvent(e)
 	}
 }
 
