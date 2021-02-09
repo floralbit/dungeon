@@ -78,7 +78,7 @@ func (p *player) GainExp(xp int) {
 func (p *player) rollStats() {
 	p.Stats.Level = 1
 	p.Stats.XP = 0
-	p.Stats.XPToNextLevel = xpForLevel(2)
+	p.Stats.XPToNextLevel = util.XPForLevel(2)
 
 	// use 3d6 for stats
 	r := util.Roll{6, 3, 0} // 3d6 + 0
@@ -90,11 +90,11 @@ func (p *player) rollStats() {
 	p.Stats.Charisma = r.Roll()
 
 	// hit dice for players is a d8, so HP = 8 + CON (1d8 + CON on level)
-	p.Stats.MaxHP = 8 + modifier(p.Stats.Constitution)
+	p.Stats.MaxHP = 8 + util.Modifier(p.Stats.Constitution)
 	if p.Stats.MaxHP <= 0 {
 		p.Stats.MaxHP = 1
 	}
 	p.Stats.HP = p.Stats.MaxHP
 
-	p.Stats.AC = 10 + modifier(p.Stats.Dexterity)
+	p.Stats.AC = 10 + util.Modifier(p.Stats.Dexterity)
 }

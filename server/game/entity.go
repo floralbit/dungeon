@@ -3,7 +3,6 @@ package game
 import (
 	"github.com/floralbit/dungeon/game/util"
 	"github.com/google/uuid"
-	"math"
 )
 
 type entityType string
@@ -13,22 +12,15 @@ const (
 	entityTypeMonster = "monster"
 )
 
-const (
-	xpLevelFactor = 500
-)
-
 type entity interface {
 	Update(dt float64)
 	Send(serverEvent)
 
-	Spawn(uuid.UUID)
-	Despawn(bool)
 	Die()
 
 	GainExp(int)
 	TakeDamage(int) bool
 	Heal(int)
-	HealFull()
 
 	Data() *entityData
 }
@@ -72,17 +64,8 @@ func (e *entityData) Send(event serverEvent) {
 	// NOP as default, players handle sends only
 }
 
-func (e *entityData) Spawn(zoneUUID uuid.UUID) {
-	z := zones[zoneUUID]
-	z.addEntity(e)
-}
-
-func (e *entityData) Despawn(becauseDeath bool) {
-	e.zone.removeEntity(e, becauseDeath)
-}
-
 func (e *entityData) Die() {
-	e.Despawn(true)
+	e.zone.removeEntity(e, true)
 }
 
 // TakeDamage returns if they would die so XP can be dished out
@@ -96,12 +79,12 @@ func (e *entityData) TakeDamage(damage int) bool {
 
 func (e *entityData) GainExp(xp int) {
 	e.Stats.XP += xp
-	nextLevelXP := xpForLevel(e.Stats.Level)
+	nextLevelXP := util.XPForLevel(e.Stats.Level)
 	for e.Stats.XP >= nextLevelXP {
 		e.Stats.Level += 1
-		e.Stats.MaxHP += util.Roll{8, 1, modifier(e.Stats.Constitution)}.Roll()
+		e.Stats.MaxHP += util.Roll{8, 1, util.Modifier(e.Stats.Constitution)}.Roll()
 		e.Stats.HP = e.Stats.MaxHP
-		nextLevelXP = xpForLevel(e.Stats.Level)
+		nextLevelXP = util.XPForLevel(e.Stats.Level)
 	}
 	e.Stats.XPToNextLevel = nextLevelXP
 }
@@ -113,16 +96,12 @@ func (e *entityData) Heal(amount int) {
 	}
 }
 
-func (e *entityData) HealFull() {
-	e.Stats.HP = e.Stats.MaxHP
-}
-
 func (e *entityData) Data() *entityData {
 	return e
 }
 
 func (e *entityData) rollToHit(targetAC int) bool {
-	toHit := util.Roll{Sides: 20, N: 1, Plus: modifier(e.Stats.Strength)}.Roll() // TODO: swap modifier based on weapon
+	toHit := util.Roll{Sides: 20, N: 1, Plus: util.Modifier(e.Stats.Strength)}.Roll() // TODO: swap modifier based on weapon
 	if toHit >= targetAC {
 		return true
 	}
@@ -130,21 +109,9 @@ func (e *entityData) rollToHit(targetAC int) bool {
 }
 
 func (e *entityData) rollDamage() int {
-	damage := util.Roll{Sides: 3, N: 1, Plus: modifier(e.Stats.Strength)}.Roll()
+	damage := util.Roll{Sides: 3, N: 1, Plus: util.Modifier(e.Stats.Strength)}.Roll()
 	if damage <= 0 {
 		damage = 1 // minimum 1 dmg
 	}
 	return damage
-}
-
-func modifier(stat int) int {
-	return (stat - 10) / 2
-}
-
-func worthXP(level int) int {
-	return level * 100
-}
-
-func xpForLevel(level int) int {
-	return int(xpLevelFactor*math.Pow(float64(level), 2) - float64(xpLevelFactor*level))
 }

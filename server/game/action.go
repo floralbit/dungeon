@@ -36,7 +36,7 @@ func (a *lightAttackAction) Execute() bool {
 
 	if wouldDie {
 		target.Die()
-		a.Attacker.GainExp(worthXP(target.Data().Stats.Level))
+		a.Attacker.GainExp(util.WorthXP(target.Data().Stats.Level))
 	}
 
 	return true // success
@@ -82,7 +82,7 @@ func (a *moveAction) Execute() bool {
 			}
 			if obj.HealZone != nil {
 				if obj.HealZone.Full {
-					p.HealFull()
+					p.Heal(p.Stats.MaxHP)
 					p.Send(newUpdateEvent(e))
 					p.Send(newMoveEvent(e, p.X, p.Y)) // tell them they're stationary
 					p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light."))
