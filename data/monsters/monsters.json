@@ -3,7 +3,7 @@
     "name": "Goblin",
     "tile": 44,
 
-    "move_speed": 1,
+    "energy_threshold": 4,
     "agro_distance": 12,
 
     "level": 1,
@@ -20,7 +20,7 @@
     "name": "Skeleton",
     "tile": 51,
 
-    "move_speed": 3,
+    "energy_threshold": 6,
     "agro_distance": 20,
 
     "level": 2,

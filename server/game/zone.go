@@ -61,15 +61,20 @@ func (z *zone) send(event serverEvent) {
 }
 
 func (z *zone) update(dt float64) {
+
+	actions := []action{}
 	for _, e := range z.Entities {
-		e.Update(dt)
+		e.Data().Energy++
+		if e.Data().Energy >= e.Data().EnergyThreshold {
+			e.Data().Energy = 0
+			a := e.Act()
+			if a != nil {
+				actions = append(actions, a)
+			}
+		}
 	}
 
-	// run queued actions (TODO: action interactions)
-	for _, e := range z.Entities {
-		if e.Data().queuedAction != nil {
-			e.Data().queuedAction.Execute()
-			e.Data().queuedAction = nil
-		}
+	for _, a := range actions {
+		a.Execute()
 	}
 }

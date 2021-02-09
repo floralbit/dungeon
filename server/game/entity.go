@@ -13,7 +13,7 @@ const (
 )
 
 type entity interface {
-	Update(dt float64)
+	Act() action
 	Send(serverEvent)
 
 	Die()
@@ -36,6 +36,9 @@ type entityData struct {
 	X int `json:"x"`
 	Y int `json:"y"`
 
+	EnergyThreshold int `json:"-"`
+	Energy          int `json:"-"`
+
 	queuedAction action `json:"-"`
 	zone         *zone  `json:"-"`
 }
@@ -56,12 +59,12 @@ type stats struct {
 	Charisma     int `json:"charisma"`
 }
 
-func (e *entityData) Update(dt float64) {
-	// NOP as default
-}
-
 func (e *entityData) Send(event serverEvent) {
 	// NOP as default, players handle sends only
+}
+
+func (e *entityData) Act() action {
+	return nil // NOP
 }
 
 func (e *entityData) Die() {

@@ -76,8 +76,8 @@ type monsterTemplate struct {
 	Name string `json:"name"`
 	Tile int    `json:"tile"`
 
-	MoveSpeed    int     `json:"move_speed"`
-	AgroDistance float64 `json:"agro_distance"`
+	EnergyThreshold int     `json:"energy_threshold"`
+	AgroDistance    float64 `json:"agro_distance"`
 
 	Level int `json:"level"`
 

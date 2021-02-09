@@ -12,10 +12,7 @@ import (
 type monster struct {
 	entityData
 
-	moveSpeed    int
 	agroDistance float64
-
-	moveTimer int
 }
 
 type monsterType string
@@ -47,8 +44,8 @@ func newMonster(t monsterType) *monster {
 				Wisdom:       template.Wisdom,
 				Charisma:     template.Charisma,
 			},
+			EnergyThreshold: template.EnergyThreshold,
 		},
-		moveSpeed:    template.MoveSpeed,
 		agroDistance: template.AgroDistance,
 	}
 
@@ -63,16 +60,7 @@ func newMonster(t monsterType) *monster {
 	return m
 }
 
-func (m *monster) Update(dt float64) {
-	// we don't lock monster moves to dt so they stay in sync (might be an issue with server lag)
-	m.moveTimer++
-	if m.moveTimer >= m.moveSpeed {
-		m.move()
-		m.moveTimer = 0
-	}
-}
-
-func (m *monster) move() {
+func (m *monster) Act() action {
 	// TODO: monster state machine w/ agro state on specific player
 	for _, e := range m.zone.Entities {
 		if e.Data().Type == entityTypePlayer {
@@ -114,16 +102,19 @@ func (m *monster) move() {
 							X:        path.Parent.Row,
 							Y:        path.Parent.Col,
 						}
+						return m.queuedAction
 					} else {
 						m.queuedAction = &moveAction{
 							Mover: m,
 							X:     path.Parent.Row,
 							Y:     path.Parent.Col,
 						}
+						return m.queuedAction
 					}
 				}
-				return
 			}
 		}
 	}
+	m.queuedAction = nil
+	return nil
 }

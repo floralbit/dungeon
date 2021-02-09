@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	warriorTileID    = 21
-	maxValidMoveDist = 3
+	warriorTileID         = 21
+	maxValidMoveDist      = 3
+	playerEnergyThreshold = 3
 )
 
 var activePlayers = map[uuid.UUID]*player{}
@@ -16,7 +17,8 @@ var activePlayers = map[uuid.UUID]*player{}
 type player struct {
 	entityData
 
-	client *model.Client
+	clientQueuedAction action
+	client             *model.Client
 }
 
 func newPlayer(client *model.Client) *player {
@@ -26,6 +28,8 @@ func newPlayer(client *model.Client) *player {
 			Name: client.Account.Username,
 			Tile: warriorTileID,
 			Type: entityTypePlayer,
+
+			EnergyThreshold: playerEnergyThreshold,
 		},
 
 		client: client,
@@ -34,6 +38,12 @@ func newPlayer(client *model.Client) *player {
 
 	activePlayers[p.UUID] = p
 	return p
+}
+
+func (p *player) Act() action {
+	a := p.queuedAction
+	p.queuedAction = nil
+	return a
 }
 
 func (p *player) Send(event serverEvent) {

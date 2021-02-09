@@ -6,7 +6,7 @@ import (
 	"github.com/floralbit/dungeon/model"
 )
 
-const tickLength = 300 // in ms
+const tickLength = 100 // in ms
 const eventBufferSize = 256
 
 // In ...
