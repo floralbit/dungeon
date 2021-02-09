@@ -49,7 +49,7 @@ func (p *player) Spawn(zoneUUID uuid.UUID) {
 			break
 		}
 	}
-	zones[startingZoneUUID].addEntity(p)
+	zones[zoneUUID].addEntity(p)
 }
 
 func (p *player) Despawn(becauseDeath bool) {
