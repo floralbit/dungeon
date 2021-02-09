@@ -1,4 +1,4 @@
-import {NETWORK_CONNECT, SEND_CHAT, SEND_MOVE, networkConnected, networkRecvMessage} from './actions';
+import {NETWORK_CONNECT, SEND_CHAT, SEND_MOVE, SEND_ATTACK, networkConnected, networkRecvMessage} from './actions';
 
 // we can pass game here if we want side effects
 export const networkMiddleware = () => {
@@ -32,6 +32,12 @@ export const networkMiddleware = () => {
       case SEND_MOVE:
         ws.send(JSON.stringify({
           move: {x: action.payload.x, y: action.payload.y},
+        }));
+        break;
+
+      case SEND_ATTACK:
+        ws.send(JSON.stringify({
+          attack: {x: action.payload.x, y: action.payload.y},
         }));
         break;
     }

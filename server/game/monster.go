@@ -63,11 +63,8 @@ func newMonster(t monsterType) *monster {
 }
 
 func (m *monster) Update(dt float64) {
-	m.moveTimer += dt
-	if m.moveTimer >= m.moveSpeed {
-		m.moveTimer = 0
-		m.move()
-	}
+	// TODO: figure out enegery system instead of per entity timers
+	m.move()
 }
 
 func (m *monster) move() {
@@ -90,10 +87,14 @@ func (m *monster) move() {
 					}
 				}
 
-				// avoid other monsters
+				// avoid other monsters by looking at their current pos or planned movement
 				for _, otherE := range m.zone.Entities {
 					if otherE.Data().Type == entityTypeMonster && otherE.Data().UUID != m.UUID {
-						a.FillTile(astar.Point{Row: otherE.Data().X, Col: otherE.Data().Y}, -1)
+						if otherMove, ok := otherE.Data().queuedAction.(*moveAction); ok {
+							a.FillTile(astar.Point{Row: otherMove.X, Col: otherMove.Y}, -1)
+						} else {
+							a.FillTile(astar.Point{Row: otherE.Data().X, Col: otherE.Data().Y}, -1)
+						}
 					}
 				}
 
@@ -103,9 +104,17 @@ func (m *monster) move() {
 				path := a.FindPath(p2p, source, target)
 				if path != nil && path.Parent != nil {
 					if path.Parent.Row == e.Data().X && path.Parent.Col == e.Data().Y {
-						m.Attack(e)
+						m.queuedAction = &lightAttackAction{
+							Attacker: m,
+							X:        path.Parent.Row,
+							Y:        path.Parent.Col,
+						}
 					} else {
-						m.Move(path.Parent.Row, path.Parent.Col) // move to first tile on path
+						m.queuedAction = &moveAction{
+							Mover: m,
+							X:     path.Parent.Row,
+							Y:     path.Parent.Col,
+						}
 					}
 				}
 				return

@@ -6,7 +6,7 @@ import (
 	"github.com/floralbit/dungeon/model"
 )
 
-const tickLength = 100 // in ms
+const tickLength = 300 // in ms
 const eventBufferSize = 256
 
 // In ...
@@ -45,6 +45,8 @@ func processEvent(e model.ClientEvent) {
 		handleChatEvent(e)
 	case e.Move != nil:
 		handleMoveEvent(e)
+	case e.Attack != nil:
+		handleAttackEvent(e)
 	}
 }
 
@@ -80,5 +82,22 @@ func handleMoveEvent(e model.ClientEvent) {
 	if !ok {
 		return // ignore inactive players
 	}
-	p.Move(e.Move.X, e.Move.Y)
+	p.queuedAction = &moveAction{
+		Mover: p,
+		X:     e.Move.X,
+		Y:     e.Move.Y,
+	}
+}
+
+func handleAttackEvent(e model.ClientEvent) {
+	p, ok := activePlayers[e.Sender.Account.UUID]
+	if !ok {
+		return // ignore inactive players
+	}
+
+	p.queuedAction = &lightAttackAction{
+		Attacker: p,
+		X:        e.Attack.X,
+		Y:        e.Attack.Y,
+	}
 }

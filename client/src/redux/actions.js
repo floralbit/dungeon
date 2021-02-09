@@ -12,6 +12,7 @@ export const SET_HOVERING = 'SET_HOVERING';
 // client side, just for middlewares
 export const SEND_CHAT = 'SEND_CHAT';
 export const SEND_MOVE = 'SEND_MOVE';
+export const SEND_ATTACK = 'SEND_ATTACK';
 
 export const networkConnect = () => ({
   type: NETWORK_CONNECT,
@@ -33,6 +34,11 @@ export const sendChat = (message) => ({
 
 export const sendMove = (x, y) => ({
   type: SEND_MOVE,
+  payload: {x, y},
+});
+
+export const sendAttack = (x, y) => ({
+  type: SEND_ATTACK,
   payload: {x, y},
 });
 

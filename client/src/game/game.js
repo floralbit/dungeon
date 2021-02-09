@@ -1,6 +1,6 @@
 import Tilemap, {TILE_SIZE} from './tilemap';
 import {lerp} from './util';
-import {sendMove, setHovering} from '../redux/actions';
+import {sendMove, sendAttack, setHovering} from '../redux/actions';
 
 const ENTITY_LERP_SPEED = 18;
 const LERP_MIN_DIST = 0.3;
@@ -22,8 +22,8 @@ class Game {
         this.renderedZoneUUID = undefined;
         this.zoneCanvas = document.createElement('canvas');
 
-        this.movementTimer = 0.0;
-        this.movementTime = 0.25; // in s, TODO: populate from server
+        this.actionTimer = 0.0;
+        this.actionTime = 0.25; // in s, TODO: populate from server
 
         this.entityLerpMap = {};
     }
@@ -64,9 +64,9 @@ class Game {
                     this.camera.y = targetCamY;
                 }
 
-                // handle movement
-                if (this.movementTimer > 0) {
-                    this.movementTimer -= dt;
+                // handle actions
+                if (this.actionTimer > 0) {
+                    this.actionTimer -= dt;
                 }
         
                 if (ui.isTyping) {
@@ -77,8 +77,10 @@ class Game {
                 const down = ui.keyPressed['ArrowDown'];
                 const left = ui.keyPressed['ArrowLeft'];
                 const right = ui.keyPressed['ArrowRight'];
+
+                const lightAttack = ui.keyPressed['KeyX'];
         
-                if (this.movementTimer <= 0) {
+                if (this.actionTimer <= 0) {
                     let moveX = player.x;
                     let moveY = player.y;
 
@@ -87,7 +89,7 @@ class Game {
                     } else if (down) {
                         moveY += 1;
                     }
-            
+
                     if (left) {
                         moveX -= 1;
                     } else if (right) {
@@ -95,12 +97,17 @@ class Game {
                     }
 
                     if (up || down || left || right) {
-                        // collision detection
-                        if (moveX >= 0 && moveX < game.zone.width && moveY >= 0 && moveY < game.zone.height) {
-                            const t = game.zone.tiles[(moveY * game.zone.width) + moveX];
-                            if (!t.solid) {
-                                this.store.dispatch(sendMove(moveX, moveY));
-                                this.movementTimer = this.movementTime;
+                        if (lightAttack) {
+                            this.store.dispatch(sendAttack(moveX, moveY));
+                            this.actionTimer = this.actionTime;
+                        } else {
+                            // collision detection
+                            if (moveX >= 0 && moveX < game.zone.width && moveY >= 0 && moveY < game.zone.height) {
+                                const t = game.zone.tiles[(moveY * game.zone.width) + moveX];
+                                if (!t.solid) {
+                                    this.store.dispatch(sendMove(moveX, moveY));
+                                    this.actionTimer = this.actionTime;
+                                }
                             }
                         }
                     }
@@ -137,6 +144,7 @@ class Game {
 
         this.ctx.save();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = '#000000';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.scale(this.camera.zoom, this.camera.zoom);
@@ -154,6 +162,15 @@ class Game {
                 const lerpData = this.entityLerpMap[entityUUID];
                 this.tilemap.drawTile(this.ctx, entity.tile, lerpData.x, lerpData.y);
             }
+        }
+
+        if (game.queuedAction) {
+            if (game.queuedAction.type === "move") {
+                this.ctx.fillStyle = 'rgba(0, 0, 255, .2)';
+            } else if (game.queuedAction.type === "attack") {
+                this.ctx.fillStyle = 'rgba(255, 0, 0, .2)';
+            }
+            this.ctx.fillRect(game.queuedAction.x * TILE_SIZE, game.queuedAction.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
 
         this.ctx.restore();

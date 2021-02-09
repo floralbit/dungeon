@@ -67,4 +67,12 @@ func (z *zone) update(dt float64) {
 	for _, e := range z.Entities {
 		e.Update(dt)
 	}
+
+	// run queued actions (TODO: action interactions)
+	for _, e := range z.Entities {
+		if e.Data().queuedAction != nil {
+			e.Data().queuedAction.Execute()
+			e.Data().queuedAction = nil
+		}
+	}
 }

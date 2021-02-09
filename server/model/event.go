@@ -4,10 +4,11 @@ import "github.com/google/uuid"
 
 // ClientEvent ...
 type ClientEvent struct {
-	Join  *ClientJoinEvent  `json:"join,omitempty"`
-	Leave *ClientLeaveEvent `json:"leave,omitempty"`
-	Chat *ClientChatEvent `json:"chat,omitempty"`
-	Move *ClientMoveEvent `json:"move,omitempty"`
+	Join   *ClientJoinEvent   `json:"join,omitempty"`
+	Leave  *ClientLeaveEvent  `json:"leave,omitempty"`
+	Chat   *ClientChatEvent   `json:"chat,omitempty"`
+	Move   *ClientMoveEvent   `json:"move,omitempty"`
+	Attack *ClientAttackEvent `json:"attack,omitempty"`
 
 	Sender *Client `json:"-"`
 }
@@ -33,10 +34,16 @@ type ClientMoveEvent struct {
 	Y int `json:"y"`
 }
 
+// ClientAttackEvent ...
+type ClientAttackEvent struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
 // ServerEvent ...
 type ServerEvent struct {
 	Connect *ServerConnectEvent `json:"connect,omitempty"`
-	Error *ServerErrorEvent `json:"error,omitempty"`
+	Error   *ServerErrorEvent   `json:"error,omitempty"`
 }
 
 // ServerConnectEvent

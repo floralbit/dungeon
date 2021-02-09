@@ -1,9 +1,10 @@
-import { NETWORK_RECV_MESSAGE, SEND_MOVE } from "../actions";
+import {NETWORK_RECV_MESSAGE, SEND_ATTACK, SEND_MOVE} from "../actions";
 
 const initialState = {
     accountUUID: null,
     zone: null,
     messages: [],
+    queuedAction: null,
 };
 
 export default function gameReducer(state = initialState, action) {
@@ -13,16 +14,22 @@ export default function gameReducer(state = initialState, action) {
 
         return {
             ...state,
-            zone: {
-                ...state.zone,
-                entities: {
-                    ...state.zone.entities,
-                    [state.accountUUID]: {
-                        ...state.zone.entities[state.accountUUID],
-                        x, y,
-                    }
-                }
-            }
+            queuedAction: {
+                type: "move",
+                x, y,
+            },
+        };
+    }
+
+    if (action.type === SEND_ATTACK) {
+        const {x, y} = action.payload;
+
+        return {
+            ...state,
+            queuedAction: {
+                type: "attack",
+                x, y,
+            },
         };
     }
 
@@ -85,8 +92,11 @@ export default function gameReducer(state = initialState, action) {
             }
 
             if (data.entity?.move) {
+                const queuedAction = data.entity.uuid === state.accountUUID ? null : state.queuedAction;
+
                 return {
                     ...state,
+                    queuedAction,
                     zone: {
                         ...state.zone,
                         entities: {
@@ -102,8 +112,10 @@ export default function gameReducer(state = initialState, action) {
             }
 
             if (data.entity?.attack) {
+                const queuedAction = data.entity.uuid === state.accountUUID ? null : state.queuedAction;
                 return {
                     ...state,
+                    queuedAction,
                     zone: {
                         ...state.zone,
                         entities: {

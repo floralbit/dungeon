@@ -22,8 +22,6 @@ type entity interface {
 
 	Spawn(uuid.UUID)
 	Despawn(bool)
-	Move(int, int)
-	Attack(entity)
 	Die()
 
 	GainExp(int)
@@ -45,7 +43,8 @@ type entityData struct {
 	X int `json:"x"`
 	Y int `json:"y"`
 
-	zone *zone `json:"-"`
+	queuedAction action `json:"-"`
+	zone         *zone  `json:"-"`
 }
 
 type stats struct {
@@ -79,33 +78,6 @@ func (e *entityData) Spawn(zoneUUID uuid.UUID) {
 
 func (e *entityData) Despawn(becauseDeath bool) {
 	e.zone.removeEntity(e, becauseDeath)
-}
-
-func (e *entityData) Move(x, y int) {
-	e.X = x
-	e.Y = y
-
-	e.zone.send(newMoveEvent(e, x, y))
-}
-
-func (e *entityData) Attack(target entity) {
-	var damage int
-	var hit bool
-
-	if e.rollToHit(e.Data().Stats.AC) {
-		hit = true
-		damage = e.rollDamage()
-	}
-
-	// resolve damage
-	wouldDie := target.TakeDamage(damage)
-	e.zone.send(newAttackEvent(e, target.Data().UUID, hit, damage, target.Data().Stats.HP))
-
-	// handle death
-	if wouldDie {
-		target.Die()
-		e.GainExp(worthXP(target.Data().Stats.Level))
-	}
 }
 
 func (e *entityData) Die() {
