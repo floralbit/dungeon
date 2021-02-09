@@ -3,14 +3,14 @@
     "name": "Goblin",
     "tile": 44,
 
-    "move_speed": 0.5,
+    "move_speed": 1,
     "agro_distance": 12,
 
     "level": 1,
 
     "strength": 8,
     "dexterity": 8,
-    "constitution": 10,
+    "constitution": 8,
     "intelligence": 8,
     "wisdom": 8,
     "charisma": 8
@@ -20,7 +20,7 @@
     "name": "Skeleton",
     "tile": 51,
 
-    "move_speed": 0.75,
+    "move_speed": 3,
     "agro_distance": 20,
 
     "level": 2,

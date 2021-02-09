@@ -12,10 +12,10 @@ import (
 type monster struct {
 	entityData
 
-	moveSpeed    float64
+	moveSpeed    int
 	agroDistance float64
 
-	moveTimer float64
+	moveTimer int
 }
 
 type monsterType string
@@ -64,8 +64,12 @@ func newMonster(t monsterType) *monster {
 }
 
 func (m *monster) Update(dt float64) {
-	// TODO: figure out enegery system instead of per entity timers
-	m.move()
+	// we don't lock monster moves to dt so they stay in sync (might be an issue with server lag)
+	m.moveTimer++
+	if m.moveTimer >= m.moveSpeed {
+		m.move()
+		m.moveTimer = 0
+	}
 }
 
 func (m *monster) move() {
