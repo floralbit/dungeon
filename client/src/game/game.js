@@ -7,6 +7,8 @@ const LERP_MIN_DIST = 0.3;
 const LERP_CAM_MAX_DIST = 30;
 const LERP_MAX_DIST = 5;
 
+const TOGGLE_DEBUG_BOXES = false;
+
 class Game {
     constructor(canvas, ctx, store) {
         this.canvas = canvas;
@@ -164,7 +166,7 @@ class Game {
             }
         }
 
-        if (game.queuedAction) {
+        if (game.queuedAction && TOGGLE_DEBUG_BOXES ) {
             if (game.queuedAction.type === "move") {
                 this.ctx.fillStyle = 'rgba(0, 0, 255, .2)';
             } else if (game.queuedAction.type === "attack") {

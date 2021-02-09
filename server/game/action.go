@@ -20,6 +20,10 @@ func (a *lightAttackAction) Execute() bool {
 		}
 	}
 	if target == nil {
+		if p, ok := a.Attacker.(*player); ok {
+			m := &moveAction{Mover: p, X: a.X, Y: a.Y}
+			return m.Execute() // for player case, move them if no target
+		}
 		return false // no target at location
 	}
 

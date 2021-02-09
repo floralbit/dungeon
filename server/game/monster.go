@@ -96,9 +96,9 @@ func (m *monster) move() {
 				for _, otherE := range m.zone.Entities {
 					if otherE.Data().Type == entityTypeMonster && otherE.Data().UUID != m.UUID {
 						if otherMove, ok := otherE.Data().queuedAction.(*moveAction); ok {
-							a.FillTile(astar.Point{Row: otherMove.X, Col: otherMove.Y}, -1)
+							a.FillTile(astar.Point{Row: otherMove.X, Col: otherMove.Y}, 3)
 						} else {
-							a.FillTile(astar.Point{Row: otherE.Data().X, Col: otherE.Data().Y}, -1)
+							a.FillTile(astar.Point{Row: otherE.Data().X, Col: otherE.Data().Y}, 3)
 						}
 					}
 				}

@@ -16,7 +16,7 @@ const (
 	levelHeight = 84
 	wfcScale    = 3
 
-	torchLikelihood    = .05 // 5%
+	torchLikelihood    = .02 // 2%
 	entranceLikelihood = .05 // 5%
 	exitLikelihood     = .05 // 5%
 )
