@@ -4,9 +4,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var startingZoneUUID = uuid.MustParse("10f8b073-cbd7-46b7-a6e3-9cbdf68a933f")
-var zones = loadZones()
-
 type tile struct {
 	ID    int    `json:"id"`
 	Solid bool   `json:"solid"`

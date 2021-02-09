@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/util"
 	"github.com/floralbit/dungeon/model"
 	"github.com/google/uuid"
 )
@@ -80,13 +81,13 @@ func (p *player) rollStats() {
 	p.Stats.XPToNextLevel = xpForLevel(2)
 
 	// use 3d6 for stats
-	r := roll{6, 3, 0} // 3d6 + 0
-	p.Stats.Strength = r.roll()
-	p.Stats.Dexterity = r.roll()
-	p.Stats.Constitution = r.roll()
-	p.Stats.Intelligence = r.roll()
-	p.Stats.Wisdom = r.roll()
-	p.Stats.Charisma = r.roll()
+	r := util.Roll{6, 3, 0} // 3d6 + 0
+	p.Stats.Strength = r.Roll()
+	p.Stats.Dexterity = r.Roll()
+	p.Stats.Constitution = r.Roll()
+	p.Stats.Intelligence = r.Roll()
+	p.Stats.Wisdom = r.Roll()
+	p.Stats.Charisma = r.Roll()
 
 	// hit dice for players is a d8, so HP = 8 + CON (1d8 + CON on level)
 	p.Stats.MaxHP = 8 + modifier(p.Stats.Constitution)

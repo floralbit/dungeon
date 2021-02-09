@@ -11,10 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var gameTileset = loadTiledTileset("../data/tileset.json")
-var tiles = convertTileset(gameTileset)
-var monsterTemplates = loadMonsterTemplates()
-
 // TODO: support multiple tilesets, other options? or keep tiles pretty specific
 
 type rawTiledMap struct {

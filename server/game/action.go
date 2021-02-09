@@ -1,5 +1,7 @@
 package game
 
+import "github.com/floralbit/dungeon/game/util"
+
 type action interface {
 	// Execute preforms the action
 	Execute() bool
@@ -55,7 +57,7 @@ type moveAction struct {
 
 func (a *moveAction) Execute() bool {
 	e := a.Mover.Data()
-	if dist(e.X, e.Y, a.X, a.Y) > maxValidMoveDist {
+	if util.Dist(e.X, e.Y, a.X, a.Y) > maxValidMoveDist {
 		// can't move, probably a move race with zone warping
 		a.Mover.Send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
 		return false

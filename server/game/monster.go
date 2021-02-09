@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"github.com/floralbit/dungeon/game/util"
 	"github.com/google/uuid"
 	"github.com/nickdavies/go-astar/astar"
 	"log"
@@ -54,7 +55,7 @@ func newMonster(t monsterType) *monster {
 	// roll hp based on hd
 	m.Stats.HP = 0
 	for m.Stats.HP <= 0 {
-		m.Stats.HP = roll{8, template.Level, modifier(m.Stats.Constitution)}.roll()
+		m.Stats.HP = util.Roll{8, template.Level, modifier(m.Stats.Constitution)}.Roll()
 	}
 	m.Stats.MaxHP = m.Stats.HP
 	m.Stats.AC = 10 + modifier(m.Stats.Dexterity)
@@ -72,7 +73,7 @@ func (m *monster) move() {
 	for _, e := range m.zone.Entities {
 		if e.Data().Type == entityTypePlayer {
 			// just target the first player we see in the zone
-			if dist(m.X, m.Y, e.Data().X, e.Data().Y) < m.agroDistance {
+			if util.Dist(m.X, m.Y, e.Data().X, e.Data().Y) < m.agroDistance {
 				// run a*
 				a := astar.NewAStar(m.zone.Width, m.zone.Height)
 				p2p := astar.NewPointToPoint()

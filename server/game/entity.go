@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/util"
 	"github.com/google/uuid"
 	"math"
 )
@@ -98,7 +99,7 @@ func (e *entityData) GainExp(xp int) {
 	nextLevelXP := xpForLevel(e.Stats.Level)
 	for e.Stats.XP >= nextLevelXP {
 		e.Stats.Level += 1
-		e.Stats.MaxHP += roll{8, 1, modifier(e.Stats.Constitution)}.roll()
+		e.Stats.MaxHP += util.Roll{8, 1, modifier(e.Stats.Constitution)}.Roll()
 		e.Stats.HP = e.Stats.MaxHP
 		nextLevelXP = xpForLevel(e.Stats.Level)
 	}
@@ -121,7 +122,7 @@ func (e *entityData) Data() *entityData {
 }
 
 func (e *entityData) rollToHit(targetAC int) bool {
-	toHit := roll{Sides: 20, N: 1, Plus: modifier(e.Stats.Strength)}.roll() // TODO: swap modifier based on weapon
+	toHit := util.Roll{Sides: 20, N: 1, Plus: modifier(e.Stats.Strength)}.Roll() // TODO: swap modifier based on weapon
 	if toHit >= targetAC {
 		return true
 	}
@@ -129,7 +130,7 @@ func (e *entityData) rollToHit(targetAC int) bool {
 }
 
 func (e *entityData) rollDamage() int {
-	damage := roll{Sides: 3, N: 1, Plus: modifier(e.Stats.Strength)}.roll()
+	damage := util.Roll{Sides: 3, N: 1, Plus: modifier(e.Stats.Strength)}.Roll()
 	if damage <= 0 {
 		damage = 1 // minimum 1 dmg
 	}

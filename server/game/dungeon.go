@@ -8,9 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var dungeonFloor1UUID = uuid.MustParse("6a67086c-eb9c-44c1-85b1-a140df7e4272")
-var dungeonFloor1 = buildDungeonFloor() // TODO: put this logic into game loop
-
 const (
 	goblinLikelihood   = .5 // 50%
 	skeletonLikelihood = .5 // 50%

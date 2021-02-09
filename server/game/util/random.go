@@ -1,12 +1,12 @@
-package game
+package util
 
 import "math/rand"
 
-type roll struct {
+type Roll struct {
 	Sides, N, Plus int
 }
 
-func (r roll) roll() int {
+func (r Roll) Roll() int {
 	var total int
 	for i := 0; i < r.N; i++ {
 		total += rand.Intn(r.Sides) + 1
