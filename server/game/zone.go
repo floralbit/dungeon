@@ -5,25 +5,32 @@ import (
 	"github.com/google/uuid"
 )
 
-type tile struct {
-	ID    int    `json:"id"`
-	Solid bool   `json:"solid"`
-	Name  string `json:"name"`
-}
-
 type zone struct {
-	UUID   uuid.UUID `json:"uuid"`
-	Name   string    `json:"name"`
-	Width  int       `json:"width"`
-	Height int       `json:"height"`
-	Tiles  []tile    `json:"tiles"`
+	UUID   uuid.UUID    `json:"uuid"`
+	Name   string       `json:"name"`
+	Width  int          `json:"width"`
+	Height int          `json:"height"`
+	Tiles  []model.Tile `json:"tiles"`
 
-	Entities     map[uuid.UUID]entity       `json:"entities"`
-	WorldObjects map[uuid.UUID]*worldObject `json:"world_objects"`
+	Entities     map[uuid.UUID]model.Entity       `json:"entities"`
+	WorldObjects map[uuid.UUID]*model.WorldObject `json:"world_objects"`
 }
 
 func (z *zone) GetUUID() uuid.UUID {
 	return z.UUID
+}
+
+func (z *zone) GetDimensions() (int, int) {
+	return z.Width, z.Height
+}
+
+func (z *zone) GetTile(x, y int) *model.Tile {
+	if x < 0 || y < 0 || x >= z.Width || y >= z.Height {
+		return nil
+	}
+
+	index := (z.Width * y) + x
+	return &z.Tiles[index]
 }
 
 func (z *zone) GetEntities() (entities []model.Entity) {
@@ -33,17 +40,8 @@ func (z *zone) GetEntities() (entities []model.Entity) {
 	return
 }
 
-func (z *zone) getTile(x, y int) *tile {
-	if x < 0 || y < 0 || x >= z.Width || y >= z.Height {
-		return nil
-	}
-
-	index := (z.Width * y) + x
-	return &z.Tiles[index]
-}
-
-func (z *zone) getWorldObjects(x, y int) []*worldObject {
-	objs := []*worldObject{}
+func (z *zone) GetWorldObjects(x, y int) []*model.WorldObject {
+	objs := []*model.WorldObject{}
 
 	for _, obj := range z.WorldObjects {
 		if obj.X == x && obj.Y == y {
@@ -54,22 +52,19 @@ func (z *zone) getWorldObjects(x, y int) []*worldObject {
 	return objs
 }
 
-func (z *zone) addEntity(e entity) {
-	z.Entities[e.Data().UUID] = e
-	e.Data().zone = z
+func (z *zone) AddEntity(e model.Entity) {
+	z.Entities[e.GetUUID()] = e
+	e.SetZone(z)
 }
 
-func (z *zone) removeEntity(e entity) {
-	delete(z.Entities, e.Data().UUID)
+func (z *zone) RemoveEntity(e model.Entity) {
+	delete(z.Entities, e.GetUUID())
 }
 
 func (z *zone) update(dt float64) {
-
-	actions := []action{}
+	actions := []model.Action{}
 	for _, e := range z.Entities {
-		e.Data().Energy++
-		if e.Data().Energy >= e.Data().EnergyThreshold {
-			e.Data().Energy = 0
+		if e.Tick() {
 			a := e.Act()
 			if a != nil {
 				actions = append(actions, a)

@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/floralbit/dungeon/game/event"
+	gameModel "github.com/floralbit/dungeon/game/model"
 	"github.com/floralbit/dungeon/game/util"
 	"github.com/floralbit/dungeon/model"
 	"github.com/google/uuid"
@@ -28,7 +29,7 @@ func newPlayer(client *model.Client) *player {
 			UUID: client.Account.UUID,
 			Name: client.Account.Username,
 			Tile: warriorTileID,
-			Type: entityTypePlayer,
+			Type: gameModel.EntityTypePlayer,
 
 			EnergyThreshold: playerEnergyThreshold,
 		},
@@ -45,7 +46,7 @@ func (p *player) GetClient() *model.Client {
 	return p.client
 }
 
-func (p *player) Act() action {
+func (p *player) Act() gameModel.Action {
 	a := p.queuedAction
 	p.queuedAction = nil
 	return a
@@ -54,26 +55,26 @@ func (p *player) Act() action {
 func (p *player) Spawn(zoneUUID uuid.UUID) {
 	z := zones[zoneUUID]
 	for _, obj := range z.WorldObjects {
-		if obj.Type == worldObjectTypePlayerSpawn {
+		if obj.Type == gameModel.WorldObjectTypePlayerSpawn {
 			p.X = obj.X
 			p.Y = obj.Y
 			break
 		}
 	}
-	zones[zoneUUID].addEntity(p)
+	zones[zoneUUID].AddEntity(p)
 	notifyObservers(event.SpawnEvent{Entity: p})
 }
 
 // Despawn is for log off only, not changing zones (TODO: fix, leave vs. despawn)
 func (p *player) Despawn() {
 	notifyObservers(event.DespawnEvent{Entity: p})
-	p.zone.removeEntity(p)
+	p.zone.RemoveEntity(p)
 	delete(activePlayers, p.UUID)
 }
 
 func (p *player) Die() {
 	notifyObservers(event.DieEvent{Entity: p})
-	p.zone.removeEntity(p)
+	p.zone.RemoveEntity(p)
 	p.rollStats()             // roll new stats cuz they're dead lol
 	p.Spawn(startingZoneUUID) // send em back to the starting zone
 	return

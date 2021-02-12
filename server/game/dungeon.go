@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/floralbit/dungeon/game/gen"
+	"github.com/floralbit/dungeon/game/model"
 	"github.com/google/uuid"
 )
 
@@ -36,8 +37,8 @@ func buildDungeonFloor() *zone {
 		Width:  level.Width,
 		Height: level.Height,
 
-		Entities:     map[uuid.UUID]entity{},
-		WorldObjects: map[uuid.UUID]*worldObject{},
+		Entities:     map[uuid.UUID]model.Entity{},
+		WorldObjects: map[uuid.UUID]*model.WorldObject{},
 	}
 
 	for y := 0; y < level.Height; y++ {
@@ -51,21 +52,21 @@ func buildDungeonFloor() *zone {
 				dungeonEntrance := zones[startingZoneUUID].WorldObjects[dungeonEntranceObjectUUID]
 
 				entranceUUID := uuid.New()
-				z.WorldObjects[entranceUUID] = &worldObject{
+				z.WorldObjects[entranceUUID] = &model.WorldObject{
 					UUID: entranceUUID,
 					Name: "Dungeon Exit",
 					Tile: tileID,
 					X:    x,
 					Y:    y,
-					Type: worldObjectTypePortal,
-					WarpTarget: &warpTarget{
+					Type: model.WorldObjectTypePortal,
+					WarpTarget: &model.WarpTarget{
 						ZoneUUID: startingZoneUUID, // TODO: when multi-layer dungeon, assign to last layer
 						X:        dungeonEntrance.X,
 						Y:        dungeonEntrance.Y,
 					},
 				}
 				// tie overworld entrance to stairs
-				dungeonEntrance.WarpTarget = &warpTarget{
+				dungeonEntrance.WarpTarget = &model.WarpTarget{
 					ZoneUUID: dungeonFloor1UUID,
 					X:        x,
 					Y:        y,
@@ -100,7 +101,7 @@ func spawnMonsters(l *gen.Level, z *zone) {
 
 				m.X = x
 				m.Y = y
-				z.addEntity(m)
+				z.AddEntity(m)
 			}
 		}
 	}

@@ -134,7 +134,7 @@ func newZoneLoadEvent(z model.Zone) serverEvent {
 func newWorldObjectSpawnEvent(o model.WorldObject) serverEvent {
 	return serverEvent{
 		WorldObject: &worldObjectEvent{
-			UUID:  o.GetUUID(),
+			UUID:  o.UUID,
 			Spawn: o,
 		},
 	}
@@ -143,7 +143,7 @@ func newWorldObjectSpawnEvent(o model.WorldObject) serverEvent {
 func newWorldObjectDespawnEvent(o model.WorldObject) serverEvent {
 	return serverEvent{
 		WorldObject: &worldObjectEvent{
-			UUID:    o.GetUUID(),
+			UUID:    o.UUID,
 			Despawn: true,
 		},
 	}

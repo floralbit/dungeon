@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/floralbit/dungeon/game/model"
 	"io/ioutil"
 	"log"
 	"os"
@@ -130,10 +131,10 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 		UUID:   mapUUID,
 		Width:  mapData.Width,
 		Height: mapData.Height,
-		Tiles:  []tile{},
+		Tiles:  []model.Tile{},
 
-		Entities:     map[uuid.UUID]entity{},
-		WorldObjects: map[uuid.UUID]*worldObject{},
+		Entities:     map[uuid.UUID]model.Entity{},
+		WorldObjects: map[uuid.UUID]*model.WorldObject{},
 	}
 
 	for _, property := range mapData.Properties {
@@ -193,24 +194,24 @@ func loadTiledMap(mapUUID uuid.UUID) *zone {
 					}
 				}
 
-				z.WorldObjects[UUID] = &worldObject{
+				z.WorldObjects[UUID] = &model.WorldObject{
 					UUID: UUID,
 					Name: obj.Name,
 					Tile: obj.TileID - 1,
 					X:    obj.X / obj.Width,
 					Y:    (obj.Y / obj.Height) - 1, // minus 1 because tiled objects start at the bottom left, tiles are top level (why the hell)
 
-					Type: worldObjectType(obj.Type),
+					Type: model.WorldObjectType(obj.Type),
 				}
 				if hasWarpTarget {
-					z.WorldObjects[UUID].WarpTarget = &warpTarget{
+					z.WorldObjects[UUID].WarpTarget = &model.WarpTarget{
 						ZoneUUID: warpTargetUUID,
 						X:        warpTargetX,
 						Y:        warpTargetY,
 					}
 				}
 				if hasFullHeal {
-					z.WorldObjects[UUID].HealZone = &healZone{
+					z.WorldObjects[UUID].HealZone = &model.HealZone{
 						Full: true,
 					}
 				}
@@ -244,8 +245,8 @@ func loadTiledTileset(path string) *rawTiledTileset {
 	return &tilesetData
 }
 
-func convertTileset(tileset *rawTiledTileset) map[int]tile {
-	res := map[int]tile{}
+func convertTileset(tileset *rawTiledTileset) map[int]model.Tile {
+	res := map[int]model.Tile{}
 
 	for _, t := range tileset.Tiles {
 		var solid bool
@@ -264,7 +265,7 @@ func convertTileset(tileset *rawTiledTileset) map[int]tile {
 				}
 			}
 		}
-		res[t.ID] = tile{
+		res[t.ID] = model.Tile{
 			ID:    t.ID,
 			Solid: solid,
 			Name:  name,

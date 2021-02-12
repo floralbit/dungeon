@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"github.com/floralbit/dungeon/game/model"
 	"github.com/floralbit/dungeon/game/util"
 	"github.com/google/uuid"
 	"github.com/nickdavies/go-astar/astar"
@@ -33,8 +34,8 @@ func newMonster(t monsterType) *monster {
 			UUID: uuid.New(),
 			Name: template.Name,
 			Tile: template.Tile,
-			Type: entityTypeMonster,
-			Stats: stats{
+			Type: model.EntityTypeMonster,
+			Stats: model.Stats{
 				Level: template.Level,
 
 				Strength:     template.Strength,
@@ -60,20 +61,22 @@ func newMonster(t monsterType) *monster {
 	return m
 }
 
-func (m *monster) Act() action {
+func (m *monster) Act() model.Action {
 	// TODO: monster state machine w/ agro state on specific player
-	for _, e := range m.zone.Entities {
-		if e.Data().Type == entityTypePlayer {
+	for _, e := range m.zone.GetEntities() {
+		if e.GetType() == model.EntityTypePlayer {
 			// just target the first player we see in the zone
-			if util.Dist(m.X, m.Y, e.Data().X, e.Data().Y) < m.agroDistance {
+			eX, eY := e.GetPosition()
+			if util.Dist(m.X, m.Y, eX, eY) < m.agroDistance {
 				// run a*
-				a := astar.NewAStar(m.zone.Width, m.zone.Height)
+				w, h := m.zone.GetDimensions()
+				a := astar.NewAStar(w, h)
 				p2p := astar.NewPointToPoint()
 
 				// avoid walls
-				for x := 0; x < m.zone.Width; x++ {
-					for y := 0; y < m.zone.Height; y++ {
-						t := m.zone.getTile(x, y)
+				for x := 0; x < w; x++ {
+					for y := 0; y < h; y++ {
+						t := m.zone.GetTile(x, y)
 						if t.Solid {
 							a.FillTile(astar.Point{Row: x, Col: y}, -1)
 						}
@@ -81,22 +84,23 @@ func (m *monster) Act() action {
 				}
 
 				// avoid other monsters by looking at their current pos or planned movement
-				for _, otherE := range m.zone.Entities {
-					if otherE.Data().Type == entityTypeMonster && otherE.Data().UUID != m.UUID {
-						if otherMove, ok := otherE.Data().queuedAction.(*moveAction); ok {
+				for _, otherE := range m.zone.GetEntities() {
+					if otherE.GetType() == model.EntityTypeMonster && otherE.GetUUID() != m.UUID {
+						otherM := otherE.(*monster)
+						if otherMove, ok := otherM.queuedAction.(*moveAction); ok {
 							a.FillTile(astar.Point{Row: otherMove.X, Col: otherMove.Y}, 3)
 						} else {
-							a.FillTile(astar.Point{Row: otherE.Data().X, Col: otherE.Data().Y}, 3)
+							a.FillTile(astar.Point{Row: otherM.X, Col: otherM.Y}, 3)
 						}
 					}
 				}
 
 				source := []astar.Point{{Row: m.X, Col: m.Y}}
-				target := []astar.Point{{Row: e.Data().X, Col: e.Data().Y}}
+				target := []astar.Point{{Row: eX, Col: eY}}
 
 				path := a.FindPath(p2p, source, target)
 				if path != nil && path.Parent != nil {
-					if path.Parent.Row == e.Data().X && path.Parent.Col == e.Data().Y {
+					if path.Parent.Row == eX && path.Parent.Col == eY {
 						m.queuedAction = &lightAttackAction{
 							Attacker: m,
 							X:        path.Parent.Row,

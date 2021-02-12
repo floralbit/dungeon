@@ -8,34 +8,13 @@ import (
 	"github.com/google/uuid"
 )
 
-type entityType string
-
-const (
-	entityTypePlayer  = "player"
-	entityTypeMonster = "monster"
-)
-
-type entity interface {
-	model.Entity
-
-	Act() action
-
-	Die()
-
-	GainExp(int)
-	TakeDamage(int) bool
-	Heal(int)
-
-	Data() *entityData
-}
-
 type entityData struct {
-	UUID uuid.UUID  `json:"uuid"`
-	Name string     `json:"name"`
-	Tile int        `json:"tile"` // representing tile
-	Type entityType `json:"type"`
+	UUID uuid.UUID        `json:"uuid"`
+	Name string           `json:"name"`
+	Tile int              `json:"tile"` // representing tile
+	Type model.EntityType `json:"type"`
 
-	Stats stats `json:"stats"`
+	Stats model.Stats `json:"stats"`
 
 	X int `json:"x"`
 	Y int `json:"y"`
@@ -43,24 +22,8 @@ type entityData struct {
 	EnergyThreshold int `json:"-"`
 	Energy          int `json:"-"`
 
-	queuedAction action `json:"-"`
-	zone         *zone  `json:"-"`
-}
-
-type stats struct {
-	Level         int `json:"level"`
-	MaxHP         int `json:"max_hp"`
-	HP            int `json:"hp"`
-	XP            int `json:"xp"`
-	AC            int `json:"ac"`
-	XPToNextLevel int `json:"xp_to_next_level"`
-
-	Strength     int `json:"strength"`
-	Dexterity    int `json:"dexterity"`
-	Constitution int `json:"constitution"`
-	Intelligence int `json:"intelligence"`
-	Wisdom       int `json:"wisdom"`
-	Charisma     int `json:"charisma"`
+	queuedAction action     `json:"-"`
+	zone         model.Zone `json:"-"`
 }
 
 func (e *entityData) GetUUID() uuid.UUID {
@@ -71,17 +34,47 @@ func (e *entityData) GetZone() model.Zone {
 	return e.zone
 }
 
+func (e *entityData) SetZone(z model.Zone) {
+	e.zone = z
+}
+
+func (e *entityData) GetType() model.EntityType {
+	return e.Type
+}
+
+func (e *entityData) GetPosition() (int, int) {
+	return e.X, e.Y
+}
+
+func (e *entityData) SetPosition(x, y int) {
+	e.X = x
+	e.Y = y
+}
+
 func (e *entityData) GetClient() *serverModel.Client {
 	return nil
 }
 
-func (e *entityData) Act() action {
+func (e *entityData) Act() model.Action {
 	return nil // NOP
+}
+
+func (e *entityData) Tick() bool {
+	e.Energy++
+	if e.Energy >= e.EnergyThreshold {
+		e.Energy = 0
+		return true
+	}
+	return false
 }
 
 func (e *entityData) Die() {
 	notifyObservers(event.DieEvent{Entity: e})
-	e.zone.removeEntity(e)
+	e.zone.RemoveEntity(e)
+}
+
+func (e *entityData) GetStats() model.Stats {
+	return e.Stats
 }
 
 // TakeDamage returns if they would die so XP can be dished out
@@ -112,11 +105,7 @@ func (e *entityData) Heal(amount int) {
 	}
 }
 
-func (e *entityData) Data() *entityData {
-	return e
-}
-
-func (e *entityData) rollToHit(targetAC int) bool {
+func (e *entityData) RollToHit(targetAC int) bool {
 	toHit := util.Roll{Sides: 20, N: 1, Plus: util.Modifier(e.Stats.Strength)}.Roll() // TODO: swap modifier based on weapon
 	if toHit >= targetAC {
 		return true
@@ -124,7 +113,7 @@ func (e *entityData) rollToHit(targetAC int) bool {
 	return false
 }
 
-func (e *entityData) rollDamage() int {
+func (e *entityData) RollDamage() int {
 	damage := util.Roll{Sides: 3, N: 1, Plus: util.Modifier(e.Stats.Strength)}.Roll()
 	if damage <= 0 {
 		damage = 1 // minimum 1 dmg
