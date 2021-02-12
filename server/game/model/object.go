@@ -3,7 +3,7 @@ package model
 import "github.com/google/uuid"
 
 type WorldObject struct {
-	UUID uuid.UUID `json:"uuiud"`
+	UUID uuid.UUID `json:"uuid"`
 	Name string    `json:"name"`
 	Tile int       `json:"tile"` // representing tile
 	X    int       `json:"x"`

@@ -2,9 +2,13 @@ package game
 
 import (
 	"github.com/floralbit/dungeon/game/action"
+	"github.com/floralbit/dungeon/game/data"
+	"github.com/floralbit/dungeon/game/dungeon"
 	"github.com/floralbit/dungeon/game/entity"
 	"github.com/floralbit/dungeon/game/event"
 	"github.com/floralbit/dungeon/game/event/network"
+	"github.com/floralbit/dungeon/game/zone"
+	"github.com/google/uuid"
 	"time"
 
 	"github.com/floralbit/dungeon/model"
@@ -16,9 +20,19 @@ const eventBufferSize = 256
 // In ...
 var In = make(chan model.ClientEvent, eventBufferSize)
 
+var zones = map[uuid.UUID]*zone.Zone{}
+
 // Run ...
 func Run() {
 	event.Observers = append(event.Observers, network.NewObserver())
+
+	zones = data.LoadZones()
+
+	// build the dungeon!
+	dungeonFloors := dungeon.BuildDungeon(zones[startingZoneUUID])
+	for _, floor := range dungeonFloors {
+		zones[floor.UUID] = floor
+	}
 
 	ticker := time.NewTicker(tickLength * time.Millisecond)
 	lastTime := time.Now()
@@ -37,7 +51,7 @@ func Run() {
 
 func update(dt float64) {
 	for _, z := range zones {
-		z.update(dt)
+		z.Update(dt)
 	}
 }
 

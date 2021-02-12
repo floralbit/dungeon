@@ -19,4 +19,6 @@ type Zone interface {
 
 	GetAllWorldObjects() []*WorldObject
 	GetWorldObjects(x, y int) []*WorldObject
+
+	Update(float64)
 }

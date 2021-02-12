@@ -1,11 +1,11 @@
-package game
+package zone
 
 import (
 	"github.com/floralbit/dungeon/game/model"
 	"github.com/google/uuid"
 )
 
-type zone struct {
+type Zone struct {
 	UUID   uuid.UUID    `json:"uuid"`
 	Name   string       `json:"name"`
 	Width  int          `json:"width"`
@@ -16,15 +16,15 @@ type zone struct {
 	WorldObjects map[uuid.UUID]*model.WorldObject `json:"world_objects"`
 }
 
-func (z *zone) GetUUID() uuid.UUID {
+func (z *Zone) GetUUID() uuid.UUID {
 	return z.UUID
 }
 
-func (z *zone) GetDimensions() (int, int) {
+func (z *Zone) GetDimensions() (int, int) {
 	return z.Width, z.Height
 }
 
-func (z *zone) GetTile(x, y int) *model.Tile {
+func (z *Zone) GetTile(x, y int) *model.Tile {
 	if x < 0 || y < 0 || x >= z.Width || y >= z.Height {
 		return nil
 	}
@@ -33,14 +33,14 @@ func (z *zone) GetTile(x, y int) *model.Tile {
 	return &z.Tiles[index]
 }
 
-func (z *zone) GetEntities() (entities []model.Entity) {
+func (z *Zone) GetEntities() (entities []model.Entity) {
 	for _, e := range z.Entities {
 		entities = append(entities, e)
 	}
 	return
 }
 
-func (z *zone) GetWorldObjects(x, y int) []*model.WorldObject {
+func (z *Zone) GetWorldObjects(x, y int) []*model.WorldObject {
 	objs := []*model.WorldObject{}
 	for _, obj := range z.WorldObjects {
 		if obj.X == x && obj.Y == y {
@@ -50,7 +50,7 @@ func (z *zone) GetWorldObjects(x, y int) []*model.WorldObject {
 	return objs
 }
 
-func (z *zone) GetAllWorldObjects() []*model.WorldObject {
+func (z *Zone) GetAllWorldObjects() []*model.WorldObject {
 	objs := []*model.WorldObject{}
 	for _, obj := range z.WorldObjects {
 		objs = append(objs, obj)
@@ -58,16 +58,16 @@ func (z *zone) GetAllWorldObjects() []*model.WorldObject {
 	return objs
 }
 
-func (z *zone) AddEntity(e model.Entity) {
+func (z *Zone) AddEntity(e model.Entity) {
 	z.Entities[e.GetUUID()] = e
 	e.SetZone(z)
 }
 
-func (z *zone) RemoveEntity(e model.Entity) {
+func (z *Zone) RemoveEntity(e model.Entity) {
 	delete(z.Entities, e.GetUUID())
 }
 
-func (z *zone) update(dt float64) {
+func (z *Zone) Update(dt float64) {
 	actions := []model.Action{}
 	for _, e := range z.Entities {
 		if e.Tick() {
