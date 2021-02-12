@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/action"
 	"github.com/floralbit/dungeon/game/event"
 	"github.com/floralbit/dungeon/game/event/network"
 	"time"
@@ -14,10 +15,10 @@ const eventBufferSize = 256
 // In ...
 var In = make(chan model.ClientEvent, eventBufferSize)
 
-var observers = []event.Observer{network.NewObserver()}
-
 // Run ...
 func Run() {
+	event.Observers = append(event.Observers, network.NewObserver())
+
 	ticker := time.NewTicker(tickLength * time.Millisecond)
 	lastTime := time.Now()
 
@@ -61,7 +62,7 @@ func handleJoinEvent(e model.ClientEvent) {
 	}
 
 	p := newPlayer(e.Sender) // TODO: pull from storage
-	notifyObservers(event.JoinEvent{Entity: p})
+	event.NotifyObservers(event.JoinEvent{Entity: p})
 	p.Spawn(startingZoneUUID)
 }
 
@@ -78,7 +79,7 @@ func handleChatEvent(e model.ClientEvent) {
 	if !ok {
 		return // ignore inactive players, TODO: send an error?
 	}
-	notifyObservers(event.ChatEvent{Entity: p, Message: e.Chat.Message})
+	event.NotifyObservers(event.ChatEvent{Entity: p, Message: e.Chat.Message})
 }
 
 func handleMoveEvent(e model.ClientEvent) {
@@ -86,7 +87,7 @@ func handleMoveEvent(e model.ClientEvent) {
 	if !ok {
 		return // ignore inactive players
 	}
-	p.queuedAction = &moveAction{
+	p.queuedAction = &action.MoveAction{
 		Mover: p,
 		X:     e.Move.X,
 		Y:     e.Move.Y,
@@ -99,15 +100,9 @@ func handleAttackEvent(e model.ClientEvent) {
 		return // ignore inactive players
 	}
 
-	p.queuedAction = &lightAttackAction{
+	p.queuedAction = &action.LightAttackAction{
 		Attacker: p,
 		X:        e.Attack.X,
 		Y:        e.Attack.Y,
-	}
-}
-
-func notifyObservers(e event.Event) {
-	for _, o := range observers {
-		o.Notify(e)
 	}
 }

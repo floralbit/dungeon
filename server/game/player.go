@@ -10,7 +10,6 @@ import (
 
 const (
 	warriorTileID         = 21
-	maxValidMoveDist      = 3
 	playerEnergyThreshold = 3
 )
 
@@ -19,7 +18,7 @@ var activePlayers = map[uuid.UUID]*player{}
 type player struct {
 	entityData
 
-	clientQueuedAction action
+	clientQueuedAction gameModel.Action
 	client             *model.Client
 }
 
@@ -62,18 +61,18 @@ func (p *player) Spawn(zoneUUID uuid.UUID) {
 		}
 	}
 	zones[zoneUUID].AddEntity(p)
-	notifyObservers(event.SpawnEvent{Entity: p})
+	event.NotifyObservers(event.SpawnEvent{Entity: p})
 }
 
 // Despawn is for log off only, not changing zones (TODO: fix, leave vs. despawn)
 func (p *player) Despawn() {
-	notifyObservers(event.DespawnEvent{Entity: p})
+	event.NotifyObservers(event.DespawnEvent{Entity: p})
 	p.zone.RemoveEntity(p)
 	delete(activePlayers, p.UUID)
 }
 
 func (p *player) Die() {
-	notifyObservers(event.DieEvent{Entity: p})
+	event.NotifyObservers(event.DieEvent{Entity: p})
 	p.zone.RemoveEntity(p)
 	p.rollStats()             // roll new stats cuz they're dead lol
 	p.Spawn(startingZoneUUID) // send em back to the starting zone
@@ -83,7 +82,7 @@ func (p *player) Die() {
 func (p *player) GainExp(xp int) {
 	originalLevel := p.Stats.Level
 	p.entityData.GainExp(xp)
-	notifyObservers(event.GainXPEvent{Entity: p, LeveledUp: originalLevel != p.Stats.Level})
+	event.NotifyObservers(event.GainXPEvent{Entity: p, LeveledUp: originalLevel != p.Stats.Level})
 }
 
 func (p *player) rollStats() {

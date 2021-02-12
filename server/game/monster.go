@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"github.com/floralbit/dungeon/game/action"
 	"github.com/floralbit/dungeon/game/model"
 	"github.com/floralbit/dungeon/game/util"
 	"github.com/google/uuid"
@@ -87,7 +88,7 @@ func (m *monster) Act() model.Action {
 				for _, otherE := range m.zone.GetEntities() {
 					if otherE.GetType() == model.EntityTypeMonster && otherE.GetUUID() != m.UUID {
 						otherM := otherE.(*monster)
-						if otherMove, ok := otherM.queuedAction.(*moveAction); ok {
+						if otherMove, ok := otherM.queuedAction.(*action.MoveAction); ok {
 							a.FillTile(astar.Point{Row: otherMove.X, Col: otherMove.Y}, 3)
 						} else {
 							a.FillTile(astar.Point{Row: otherM.X, Col: otherM.Y}, 3)
@@ -101,14 +102,14 @@ func (m *monster) Act() model.Action {
 				path := a.FindPath(p2p, source, target)
 				if path != nil && path.Parent != nil {
 					if path.Parent.Row == eX && path.Parent.Col == eY {
-						m.queuedAction = &lightAttackAction{
+						m.queuedAction = &action.LightAttackAction{
 							Attacker: m,
 							X:        path.Parent.Row,
 							Y:        path.Parent.Col,
 						}
 						return m.queuedAction
 					} else {
-						m.queuedAction = &moveAction{
+						m.queuedAction = &action.MoveAction{
 							Mover: m,
 							X:     path.Parent.Row,
 							Y:     path.Parent.Col,

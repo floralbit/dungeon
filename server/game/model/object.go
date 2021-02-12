@@ -25,6 +25,7 @@ const (
 
 type WarpTarget struct {
 	ZoneUUID uuid.UUID `json:"zone_uuid"`
+	Zone     Zone      `json:"-"`
 	X        int       `json:"x"`
 	Y        int       `json:"y"`
 }

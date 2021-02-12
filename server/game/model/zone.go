@@ -14,6 +14,7 @@ type Zone interface {
 
 	GetTile(x, y int) *Tile
 	GetEntities() []Entity
+	AddEntity(Entity)
 	RemoveEntity(Entity)
 
 	GetWorldObjects(x, y int) []*WorldObject

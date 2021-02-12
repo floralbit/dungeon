@@ -22,8 +22,8 @@ type entityData struct {
 	EnergyThreshold int `json:"-"`
 	Energy          int `json:"-"`
 
-	queuedAction action     `json:"-"`
-	zone         model.Zone `json:"-"`
+	queuedAction model.Action `json:"-"`
+	zone         model.Zone   `json:"-"`
 }
 
 func (e *entityData) GetUUID() uuid.UUID {
@@ -69,7 +69,7 @@ func (e *entityData) Tick() bool {
 }
 
 func (e *entityData) Die() {
-	notifyObservers(event.DieEvent{Entity: e})
+	event.NotifyObservers(event.DieEvent{Entity: e})
 	e.zone.RemoveEntity(e)
 }
 

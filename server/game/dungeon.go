@@ -60,6 +60,7 @@ func buildDungeonFloor() *zone {
 					Y:    y,
 					Type: model.WorldObjectTypePortal,
 					WarpTarget: &model.WarpTarget{
+						Zone:     zones[startingZoneUUID],
 						ZoneUUID: startingZoneUUID, // TODO: when multi-layer dungeon, assign to last layer
 						X:        dungeonEntrance.X,
 						Y:        dungeonEntrance.Y,
@@ -67,6 +68,7 @@ func buildDungeonFloor() *zone {
 				}
 				// tie overworld entrance to stairs
 				dungeonEntrance.WarpTarget = &model.WarpTarget{
+					Zone:     z,
 					ZoneUUID: dungeonFloor1UUID,
 					X:        x,
 					Y:        y,

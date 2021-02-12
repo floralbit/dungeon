@@ -106,6 +106,14 @@ func loadZones() map[uuid.UUID]*zone {
 		}
 	}
 
+	for _, z := range zones {
+		for _, obj := range z.WorldObjects {
+			if obj.WarpTarget != nil {
+				obj.WarpTarget.Zone = zones[obj.WarpTarget.ZoneUUID] // tie warp targets to zones via UUIDs
+			}
+		}
+	}
+
 	return zones
 }
 
