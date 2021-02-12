@@ -1,6 +1,8 @@
 package game
 
 import (
+	"time"
+
 	"github.com/floralbit/dungeon/game/action"
 	"github.com/floralbit/dungeon/game/data"
 	"github.com/floralbit/dungeon/game/dungeon"
@@ -8,14 +10,14 @@ import (
 	"github.com/floralbit/dungeon/game/event"
 	"github.com/floralbit/dungeon/game/event/network"
 	"github.com/floralbit/dungeon/game/zone"
-	"github.com/google/uuid"
-	"time"
-
 	"github.com/floralbit/dungeon/model"
+	"github.com/google/uuid"
 )
 
 const tickLength = 100 // in ms
 const eventBufferSize = 256
+
+var startingZoneUUID = uuid.MustParse("10f8b073-cbd7-46b7-a6e3-9cbdf68a933f")
 
 // In ...
 var In = make(chan model.ClientEvent, eventBufferSize)
@@ -114,7 +116,6 @@ func handleAttackEvent(e model.ClientEvent) {
 	if !ok {
 		return // ignore inactive players
 	}
-
 	p.QueuedAction = &action.LightAttackAction{
 		Attacker: p,
 		X:        e.Attack.X,

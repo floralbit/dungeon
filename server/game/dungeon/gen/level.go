@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	levelWidth  = 84
-	levelHeight = 84
+	levelWidth  = 40
+	levelHeight = 40
 	wfcScale    = 3
 
 	torchLikelihood    = .02 // 2%
