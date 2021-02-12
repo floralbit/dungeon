@@ -1,6 +1,9 @@
 package game
 
-import "github.com/floralbit/dungeon/game/util"
+import (
+	"github.com/floralbit/dungeon/game/event"
+	"github.com/floralbit/dungeon/game/util"
+)
 
 type action interface {
 	// Execute preforms the action
@@ -36,7 +39,7 @@ func (a *lightAttackAction) Execute() bool {
 
 	// resolve damage
 	wouldDie := target.TakeDamage(damage)
-	a.Attacker.Data().zone.send(newAttackEvent(a.Attacker.Data(), target.Data().UUID, hit, damage, target.Data().Stats.HP))
+	notifyObservers(event.AttackEvent{Attacker: a.Attacker, Target: target, Hit: hit, Damage: damage, TargetHP: target.Data().Stats.HP})
 
 	if wouldDie {
 		target.Die()
@@ -63,14 +66,14 @@ func (a *moveAction) Execute() bool {
 	e := a.Mover.Data()
 	if util.Dist(e.X, e.Y, a.X, a.Y) > maxValidMoveDist {
 		// can't move, probably a move race with zone warping
-		a.Mover.Send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
+		notifyObservers(event.MoveEvent{Entity: e, X: e.X, Y: e.Y}) // tell them they're stationary
 		return false
 	}
 
 	t := e.zone.getTile(a.X, a.Y)
 	if t == nil || t.Solid {
 		// edge of map or solid, don't move
-		a.Mover.Send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
+		notifyObservers(event.MoveEvent{Entity: e, X: e.X, Y: e.Y}) // tell them they're stationary
 		return false
 	}
 
@@ -78,18 +81,19 @@ func (a *moveAction) Execute() bool {
 		objs := p.zone.getWorldObjects(a.X, a.Y)
 		for _, obj := range objs {
 			if obj.WarpTarget != nil {
-				p.zone.removeEntity(p, false)
+				notifyObservers(event.DespawnEvent{Entity: p})
+				p.zone.removeEntity(p)
 				zones[obj.WarpTarget.ZoneUUID].addEntity(p)
 				p.X = obj.WarpTarget.X
 				p.Y = obj.WarpTarget.Y
+				notifyObservers(event.SpawnEvent{Entity: p})
 				return true
 			}
 			if obj.HealZone != nil {
 				if obj.HealZone.Full {
 					p.Heal(p.Stats.MaxHP)
-					p.Send(newUpdateEvent(e))
-					p.Send(newMoveEvent(e, p.X, p.Y)) // tell them they're stationary
-					p.Send(newServerMessageEvent("You pray to your gods and are fully healed in their light."))
+					notifyObservers(event.HealEvent{Entity: p, Amount: p.Stats.MaxHP, Full: true})
+					notifyObservers(event.MoveEvent{Entity: e, X: e.X, Y: e.Y}) // tell them they're stationary
 					return true
 				}
 			}
@@ -99,7 +103,7 @@ func (a *moveAction) Execute() bool {
 	for _, otherE := range a.Mover.Data().zone.Entities {
 		if a.Mover != otherE && otherE.Data().X == a.X && otherE.Data().Y == a.Y {
 			// someone is there, block the way
-			a.Mover.Send(newMoveEvent(e, e.X, e.Y)) // tell them they're stationary
+			notifyObservers(event.MoveEvent{Entity: e, X: e.X, Y: e.Y}) // tell them they're stationary
 			return false
 		}
 	}
@@ -107,6 +111,6 @@ func (a *moveAction) Execute() bool {
 	e.X = a.X
 	e.Y = a.Y
 
-	e.zone.send(newMoveEvent(e, a.X, a.Y))
+	notifyObservers(event.MoveEvent{Entity: e, X: a.X, Y: a.Y})
 	return true // success
 }

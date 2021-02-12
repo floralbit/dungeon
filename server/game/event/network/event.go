@@ -1,6 +1,9 @@
-package game
+package network
 
-import "github.com/google/uuid"
+import (
+	"github.com/floralbit/dungeon/game/model"
+	"github.com/google/uuid"
+)
 
 type serverEvent struct {
 	Entity      *entityEvent        `json:"entity,omitempty"`
@@ -12,8 +15,8 @@ type serverEvent struct {
 type entityEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
-	Update  *entityData        `json:"update,omitemtpy"`
-	Spawn   *entityData        `json:"spawn,omitempty"`
+	Update  model.Entity       `json:"update,omitemtpy"`
+	Spawn   model.Entity       `json:"spawn,omitempty"`
 	Despawn bool               `json:"despawn"`
 	Die     bool               `json:"die"`
 	Move    *entityMoveEvent   `json:"move,omitempty"`
@@ -40,52 +43,52 @@ type entityAttackEvent struct {
 type zoneEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
-	Load *zone `json:"load,omitempty"`
+	Load model.Zone `json:"load,omitempty"`
 }
 
 type worldObjectEvent struct {
 	UUID uuid.UUID `json:"uuid"`
 
-	Spawn   *worldObject `json:"spawn,omitempty"`
-	Despawn bool         `json:"despawn"`
+	Spawn   model.WorldObject `json:"spawn,omitempty"`
+	Despawn bool              `json:"despawn"`
 }
 
 type serverMessageEvent struct {
 	Message string `json:"message"`
 }
 
-func newUpdateEvent(e *entityData) serverEvent {
+func newUpdateEvent(e model.Entity) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID:   e.UUID,
+			UUID:   e.GetUUID(),
 			Update: e,
 		},
 	}
 }
 
-func newSpawnEvent(e *entityData) serverEvent {
+func newSpawnEvent(e model.Entity) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID:  e.UUID,
+			UUID:  e.GetUUID(),
 			Spawn: e,
 		},
 	}
 }
 
-func newDespawnEvent(e *entityData, becauseDeath bool) serverEvent {
+func newDespawnEvent(e model.Entity, becauseDeath bool) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID:    e.UUID,
+			UUID:    e.GetUUID(),
 			Despawn: true,
 			Die:     becauseDeath,
 		},
 	}
 }
 
-func newMoveEvent(e *entityData, x, y int) serverEvent {
+func newMoveEvent(e model.Entity, x, y int) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID: e.UUID,
+			UUID: e.GetUUID(),
 			Move: &entityMoveEvent{
 				X: x,
 				Y: y,
@@ -94,10 +97,10 @@ func newMoveEvent(e *entityData, x, y int) serverEvent {
 	}
 }
 
-func newChatEvent(e *entityData, message string) serverEvent {
+func newChatEvent(e model.Entity, message string) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID: e.UUID,
+			UUID: e.GetUUID(),
 			Chat: &entityChatEvent{
 				Message: message,
 			},
@@ -105,10 +108,10 @@ func newChatEvent(e *entityData, message string) serverEvent {
 	}
 }
 
-func newAttackEvent(e *entityData, target uuid.UUID, hit bool, damage int, targetHP int) serverEvent {
+func newAttackEvent(e model.Entity, target uuid.UUID, hit bool, damage int, targetHP int) serverEvent {
 	return serverEvent{
 		Entity: &entityEvent{
-			UUID: e.UUID,
+			UUID: e.GetUUID(),
 			Attack: &entityAttackEvent{
 				Target:   target,
 				Hit:      hit,
@@ -119,28 +122,28 @@ func newAttackEvent(e *entityData, target uuid.UUID, hit bool, damage int, targe
 	}
 }
 
-func newZoneLoadEvent(z *zone) serverEvent {
+func newZoneLoadEvent(z model.Zone) serverEvent {
 	return serverEvent{
 		Zone: &zoneEvent{
-			UUID: z.UUID,
+			UUID: z.GetUUID(),
 			Load: z,
 		},
 	}
 }
 
-func newWorldObjectSpawnEvent(o *worldObject) serverEvent {
+func newWorldObjectSpawnEvent(o model.WorldObject) serverEvent {
 	return serverEvent{
 		WorldObject: &worldObjectEvent{
-			UUID:  o.UUID,
+			UUID:  o.GetUUID(),
 			Spawn: o,
 		},
 	}
 }
 
-func newWorldObjectDespawnEvent(o *worldObject) serverEvent {
+func newWorldObjectDespawnEvent(o model.WorldObject) serverEvent {
 	return serverEvent{
 		WorldObject: &worldObjectEvent{
-			UUID:    o.UUID,
+			UUID:    o.GetUUID(),
 			Despawn: true,
 		},
 	}

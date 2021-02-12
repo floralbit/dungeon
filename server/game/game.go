@@ -1,6 +1,8 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/event"
+	"github.com/floralbit/dungeon/game/event/network"
 	"time"
 
 	"github.com/floralbit/dungeon/model"
@@ -11,6 +13,8 @@ const eventBufferSize = 256
 
 // In ...
 var In = make(chan model.ClientEvent, eventBufferSize)
+
+var observers = []event.Observer{network.NewObserver()}
 
 // Run ...
 func Run() {
@@ -56,8 +60,8 @@ func handleJoinEvent(e model.ClientEvent) {
 		return // player already logged in, TODO: handle gracefully ?
 	}
 
-	p := newPlayer(e.Sender)            // TODO: pull from storage
-	p.Send(newServerMessageEvent(motd)) // send message of the day
+	p := newPlayer(e.Sender) // TODO: pull from storage
+	notifyObservers(event.JoinEvent{Entity: p})
 	p.Spawn(startingZoneUUID)
 }
 
@@ -66,7 +70,7 @@ func handleLeaveEvent(e model.ClientEvent) {
 	if !ok {
 		return
 	}
-	p.Despawn(false)
+	p.Despawn()
 }
 
 func handleChatEvent(e model.ClientEvent) {
@@ -74,7 +78,7 @@ func handleChatEvent(e model.ClientEvent) {
 	if !ok {
 		return // ignore inactive players, TODO: send an error?
 	}
-	p.Data().zone.send(newChatEvent(p.Data(), e.Chat.Message))
+	notifyObservers(event.ChatEvent{Entity: p, Message: e.Chat.Message})
 }
 
 func handleMoveEvent(e model.ClientEvent) {
@@ -99,5 +103,11 @@ func handleAttackEvent(e model.ClientEvent) {
 		Attacker: p,
 		X:        e.Attack.X,
 		Y:        e.Attack.Y,
+	}
+}
+
+func notifyObservers(e event.Event) {
+	for _, o := range observers {
+		o.Notify(e)
 	}
 }

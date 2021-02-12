@@ -1,7 +1,10 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/event"
+	"github.com/floralbit/dungeon/game/model"
 	"github.com/floralbit/dungeon/game/util"
+	serverModel "github.com/floralbit/dungeon/model"
 	"github.com/google/uuid"
 )
 
@@ -13,8 +16,9 @@ const (
 )
 
 type entity interface {
+	model.Entity
+
 	Act() action
-	Send(serverEvent)
 
 	Die()
 
@@ -59,8 +63,16 @@ type stats struct {
 	Charisma     int `json:"charisma"`
 }
 
-func (e *entityData) Send(event serverEvent) {
-	// NOP as default, players handle sends only
+func (e *entityData) GetUUID() uuid.UUID {
+	return e.UUID
+}
+
+func (e *entityData) GetZone() model.Zone {
+	return e.zone
+}
+
+func (e *entityData) GetClient() *serverModel.Client {
+	return nil
 }
 
 func (e *entityData) Act() action {
@@ -68,7 +80,8 @@ func (e *entityData) Act() action {
 }
 
 func (e *entityData) Die() {
-	e.zone.removeEntity(e, true)
+	notifyObservers(event.DieEvent{Entity: e})
+	e.zone.removeEntity(e)
 }
 
 // TakeDamage returns if they would die so XP can be dished out

@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/model"
 	"github.com/google/uuid"
 )
 
@@ -19,6 +20,17 @@ type zone struct {
 
 	Entities     map[uuid.UUID]entity       `json:"entities"`
 	WorldObjects map[uuid.UUID]*worldObject `json:"world_objects"`
+}
+
+func (z *zone) GetUUID() uuid.UUID {
+	return z.UUID
+}
+
+func (z *zone) GetEntities() (entities []model.Entity) {
+	for _, e := range z.Entities {
+		entities = append(entities, e)
+	}
+	return
 }
 
 func (z *zone) getTile(x, y int) *tile {
@@ -45,19 +57,10 @@ func (z *zone) getWorldObjects(x, y int) []*worldObject {
 func (z *zone) addEntity(e entity) {
 	z.Entities[e.Data().UUID] = e
 	e.Data().zone = z
-	z.send(newSpawnEvent(e.Data()))
-	e.Send(newZoneLoadEvent(z)) // send entity the zone data
 }
 
-func (z *zone) removeEntity(e entity, becauseDeath bool) {
+func (z *zone) removeEntity(e entity) {
 	delete(z.Entities, e.Data().UUID)
-	z.send(newDespawnEvent(e.Data(), becauseDeath))
-}
-
-func (z *zone) send(event serverEvent) {
-	for _, e := range z.Entities {
-		e.Send(event)
-	}
 }
 
 func (z *zone) update(dt float64) {

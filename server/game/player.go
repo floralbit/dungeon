@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/event"
 	"github.com/floralbit/dungeon/game/util"
 	"github.com/floralbit/dungeon/model"
 	"github.com/google/uuid"
@@ -40,14 +41,14 @@ func newPlayer(client *model.Client) *player {
 	return p
 }
 
+func (p *player) GetClient() *model.Client {
+	return p.client
+}
+
 func (p *player) Act() action {
 	a := p.queuedAction
 	p.queuedAction = nil
 	return a
-}
-
-func (p *player) Send(event serverEvent) {
-	p.client.In <- event
 }
 
 func (p *player) Spawn(zoneUUID uuid.UUID) {
@@ -60,17 +61,19 @@ func (p *player) Spawn(zoneUUID uuid.UUID) {
 		}
 	}
 	zones[zoneUUID].addEntity(p)
+	notifyObservers(event.SpawnEvent{Entity: p})
 }
 
-func (p *player) Despawn(becauseDeath bool) {
-	p.zone.removeEntity(p, becauseDeath)
+// Despawn is for log off only, not changing zones (TODO: fix, leave vs. despawn)
+func (p *player) Despawn() {
+	notifyObservers(event.DespawnEvent{Entity: p})
+	p.zone.removeEntity(p)
 	delete(activePlayers, p.UUID)
 }
 
 func (p *player) Die() {
-	p.Send(newServerMessageEvent("You died."))
-	p.Send(newServerMessageEvent("Your soul enters a new body. You are reborn."))
-	p.zone.removeEntity(p, true)
+	notifyObservers(event.DieEvent{Entity: p})
+	p.zone.removeEntity(p)
 	p.rollStats()             // roll new stats cuz they're dead lol
 	p.Spawn(startingZoneUUID) // send em back to the starting zone
 	return
@@ -79,10 +82,7 @@ func (p *player) Die() {
 func (p *player) GainExp(xp int) {
 	originalLevel := p.Stats.Level
 	p.entityData.GainExp(xp)
-	if originalLevel != p.Stats.Level {
-		p.Send(newServerMessageEvent("You leveled up! You have a newfound strength coursing through your veins."))
-	}
-	p.Send(newUpdateEvent(p.Data())) // xp (& level) update
+	notifyObservers(event.GainXPEvent{Entity: p, LeveledUp: originalLevel != p.Stats.Level})
 }
 
 func (p *player) rollStats() {
