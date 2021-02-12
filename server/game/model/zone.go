@@ -17,5 +17,6 @@ type Zone interface {
 	AddEntity(Entity)
 	RemoveEntity(Entity)
 
+	GetAllWorldObjects() []*WorldObject
 	GetWorldObjects(x, y int) []*WorldObject
 }

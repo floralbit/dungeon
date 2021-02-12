@@ -1,4 +1,4 @@
-package game
+package entity
 
 import (
 	"github.com/floralbit/dungeon/game/event"
@@ -13,16 +13,16 @@ const (
 	playerEnergyThreshold = 3
 )
 
-var activePlayers = map[uuid.UUID]*player{}
+var ActivePlayers = map[uuid.UUID]*player{}
 
 type player struct {
 	entityData
 
-	clientQueuedAction gameModel.Action
-	client             *model.Client
+	startingZone gameModel.Zone
+	client       *model.Client
 }
 
-func newPlayer(client *model.Client) *player {
+func NewPlayer(client *model.Client) *player {
 	p := &player{
 		entityData: entityData{
 			UUID: client.Account.UUID,
@@ -37,7 +37,7 @@ func newPlayer(client *model.Client) *player {
 	}
 	p.rollStats()
 
-	activePlayers[p.UUID] = p
+	ActivePlayers[p.UUID] = p
 	return p
 }
 
@@ -46,21 +46,21 @@ func (p *player) GetClient() *model.Client {
 }
 
 func (p *player) Act() gameModel.Action {
-	a := p.queuedAction
-	p.queuedAction = nil
+	a := p.QueuedAction
+	p.QueuedAction = nil
 	return a
 }
 
-func (p *player) Spawn(zoneUUID uuid.UUID) {
-	z := zones[zoneUUID]
-	for _, obj := range z.WorldObjects {
+func (p *player) Spawn(z gameModel.Zone) {
+	for _, obj := range z.GetAllWorldObjects() {
 		if obj.Type == gameModel.WorldObjectTypePlayerSpawn {
 			p.X = obj.X
 			p.Y = obj.Y
 			break
 		}
 	}
-	zones[zoneUUID].AddEntity(p)
+	p.startingZone = z
+	z.AddEntity(p)
 	event.NotifyObservers(event.SpawnEvent{Entity: p})
 }
 
@@ -68,14 +68,14 @@ func (p *player) Spawn(zoneUUID uuid.UUID) {
 func (p *player) Despawn() {
 	event.NotifyObservers(event.DespawnEvent{Entity: p})
 	p.zone.RemoveEntity(p)
-	delete(activePlayers, p.UUID)
+	delete(ActivePlayers, p.UUID)
 }
 
 func (p *player) Die() {
 	event.NotifyObservers(event.DieEvent{Entity: p})
 	p.zone.RemoveEntity(p)
-	p.rollStats()             // roll new stats cuz they're dead lol
-	p.Spawn(startingZoneUUID) // send em back to the starting zone
+	p.rollStats()           // roll new stats cuz they're dead lol
+	p.Spawn(p.startingZone) // send em back to the starting zone
 	return
 }
 

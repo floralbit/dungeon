@@ -3,12 +3,12 @@ package game
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/floralbit/dungeon/game/model"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 
+	"github.com/floralbit/dungeon/game/model"
 	"github.com/google/uuid"
 )
 
@@ -71,23 +71,6 @@ type rawTiledTileset struct {
 	TileWidth int     `json:"tilewidth"`
 	Type      string  `json:"type"`
 	Version   float64 `json:"version"`
-}
-
-type monsterTemplate struct {
-	Name string `json:"name"`
-	Tile int    `json:"tile"`
-
-	EnergyThreshold int     `json:"energy_threshold"`
-	AgroDistance    float64 `json:"agro_distance"`
-
-	Level int `json:"level"`
-
-	Strength     int `json:"strength"`
-	Dexterity    int `json:"dexterity"`
-	Constitution int `json:"constitution"`
-	Intelligence int `json:"intelligence"`
-	Wisdom       int `json:"wisdom"`
-	Charisma     int `json:"charisma"`
 }
 
 func loadZones() map[uuid.UUID]*zone {
@@ -278,28 +261,6 @@ func convertTileset(tileset *rawTiledTileset) map[int]model.Tile {
 			Solid: solid,
 			Name:  name,
 		}
-	}
-
-	return res
-}
-
-func loadMonsterTemplates() map[monsterType]monsterTemplate {
-	res := map[monsterType]monsterTemplate{}
-
-	monsterTemplateFile, err := os.Open("../data/monsters/monsters.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer monsterTemplateFile.Close()
-
-	rawData, err := ioutil.ReadAll(monsterTemplateFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = json.Unmarshal(rawData, &res)
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	return res

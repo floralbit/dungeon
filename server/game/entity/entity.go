@@ -1,4 +1,4 @@
-package game
+package entity
 
 import (
 	"github.com/floralbit/dungeon/game/event"
@@ -22,7 +22,7 @@ type entityData struct {
 	EnergyThreshold int `json:"-"`
 	Energy          int `json:"-"`
 
-	queuedAction model.Action `json:"-"`
+	QueuedAction model.Action `json:"-"`
 	zone         model.Zone   `json:"-"`
 }
 

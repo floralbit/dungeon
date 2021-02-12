@@ -8,7 +8,6 @@ var overworldSpawnObjectUUID = uuid.MustParse("b4f195f7-644a-4791-8177-c9eb69b10
 var dungeonEntranceObjectUUID = uuid.MustParse("85ab1aaf-fcb2-4fa2-80e0-3cf54f8cad41")
 
 var tiles = convertTileset(loadTiledTileset("../data/tileset.json"))
-var monsterTemplates = loadMonsterTemplates()
 
 var zones = loadZones()
 var dungeonFloor1 = buildDungeonFloor() // TODO: put this logic into game loop

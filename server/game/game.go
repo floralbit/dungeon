@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/floralbit/dungeon/game/action"
+	"github.com/floralbit/dungeon/game/entity"
 	"github.com/floralbit/dungeon/game/event"
 	"github.com/floralbit/dungeon/game/event/network"
 	"time"
@@ -56,18 +57,18 @@ func processEvent(e model.ClientEvent) {
 }
 
 func handleJoinEvent(e model.ClientEvent) {
-	_, ok := activePlayers[e.Sender.Account.UUID]
+	_, ok := entity.ActivePlayers[e.Sender.Account.UUID]
 	if ok {
 		return // player already logged in, TODO: handle gracefully ?
 	}
 
-	p := newPlayer(e.Sender) // TODO: pull from storage
+	p := entity.NewPlayer(e.Sender) // TODO: pull from storage
 	event.NotifyObservers(event.JoinEvent{Entity: p})
-	p.Spawn(startingZoneUUID)
+	p.Spawn(zones[startingZoneUUID])
 }
 
 func handleLeaveEvent(e model.ClientEvent) {
-	p, ok := activePlayers[e.Sender.Account.UUID]
+	p, ok := entity.ActivePlayers[e.Sender.Account.UUID]
 	if !ok {
 		return
 	}
@@ -75,7 +76,7 @@ func handleLeaveEvent(e model.ClientEvent) {
 }
 
 func handleChatEvent(e model.ClientEvent) {
-	p, ok := activePlayers[e.Sender.Account.UUID]
+	p, ok := entity.ActivePlayers[e.Sender.Account.UUID]
 	if !ok {
 		return // ignore inactive players, TODO: send an error?
 	}
@@ -83,11 +84,11 @@ func handleChatEvent(e model.ClientEvent) {
 }
 
 func handleMoveEvent(e model.ClientEvent) {
-	p, ok := activePlayers[e.Sender.Account.UUID]
+	p, ok := entity.ActivePlayers[e.Sender.Account.UUID]
 	if !ok {
 		return // ignore inactive players
 	}
-	p.queuedAction = &action.MoveAction{
+	p.QueuedAction = &action.MoveAction{
 		Mover: p,
 		X:     e.Move.X,
 		Y:     e.Move.Y,
@@ -95,12 +96,12 @@ func handleMoveEvent(e model.ClientEvent) {
 }
 
 func handleAttackEvent(e model.ClientEvent) {
-	p, ok := activePlayers[e.Sender.Account.UUID]
+	p, ok := entity.ActivePlayers[e.Sender.Account.UUID]
 	if !ok {
 		return // ignore inactive players
 	}
 
-	p.queuedAction = &action.LightAttackAction{
+	p.QueuedAction = &action.LightAttackAction{
 		Attacker: p,
 		X:        e.Attack.X,
 		Y:        e.Attack.Y,

@@ -42,13 +42,19 @@ func (z *zone) GetEntities() (entities []model.Entity) {
 
 func (z *zone) GetWorldObjects(x, y int) []*model.WorldObject {
 	objs := []*model.WorldObject{}
-
 	for _, obj := range z.WorldObjects {
 		if obj.X == x && obj.Y == y {
 			objs = append(objs, obj)
 		}
 	}
+	return objs
+}
 
+func (z *zone) GetAllWorldObjects() []*model.WorldObject {
+	objs := []*model.WorldObject{}
+	for _, obj := range z.WorldObjects {
+		objs = append(objs, obj)
+	}
 	return objs
 }
 

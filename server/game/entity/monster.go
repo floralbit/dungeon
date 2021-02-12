@@ -1,9 +1,10 @@
-package game
+package entity
 
 import (
 	"errors"
 	"fmt"
 	"github.com/floralbit/dungeon/game/action"
+	"github.com/floralbit/dungeon/game/data"
 	"github.com/floralbit/dungeon/game/model"
 	"github.com/floralbit/dungeon/game/util"
 	"github.com/google/uuid"
@@ -11,7 +12,7 @@ import (
 	"log"
 )
 
-type monster struct {
+type Monster struct {
 	entityData
 
 	agroDistance float64
@@ -20,17 +21,17 @@ type monster struct {
 type monsterType string
 
 const (
-	monsterTypeGoblin   = "goblin"
-	monsterTypeSkeleton = "skeleton"
+	MonsterTypeGoblin   = "goblin"
+	MonsterTypeSkeleton = "skeleton"
 )
 
-func newMonster(t monsterType) *monster {
-	template, ok := monsterTemplates[t]
+func NewMonster(t monsterType) *Monster {
+	template, ok := data.MonsterTemplates[string(t)]
 	if !ok {
-		log.Fatal(errors.New(fmt.Sprintf("no monster found for type %s", t)))
+		log.Fatal(errors.New(fmt.Sprintf("no Monster found for type %s", t)))
 	}
 
-	m := &monster{
+	m := &Monster{
 		entityData: entityData{
 			UUID: uuid.New(),
 			Name: template.Name,
@@ -62,8 +63,8 @@ func newMonster(t monsterType) *monster {
 	return m
 }
 
-func (m *monster) Act() model.Action {
-	// TODO: monster state machine w/ agro state on specific player
+func (m *Monster) Act() model.Action {
+	// TODO: Monster state machine w/ agro state on specific player
 	for _, e := range m.zone.GetEntities() {
 		if e.GetType() == model.EntityTypePlayer {
 			// just target the first player we see in the zone
@@ -87,8 +88,8 @@ func (m *monster) Act() model.Action {
 				// avoid other monsters by looking at their current pos or planned movement
 				for _, otherE := range m.zone.GetEntities() {
 					if otherE.GetType() == model.EntityTypeMonster && otherE.GetUUID() != m.UUID {
-						otherM := otherE.(*monster)
-						if otherMove, ok := otherM.queuedAction.(*action.MoveAction); ok {
+						otherM := otherE.(*Monster)
+						if otherMove, ok := otherM.QueuedAction.(*action.MoveAction); ok {
 							a.FillTile(astar.Point{Row: otherMove.X, Col: otherMove.Y}, 3)
 						} else {
 							a.FillTile(astar.Point{Row: otherM.X, Col: otherM.Y}, 3)
@@ -102,24 +103,24 @@ func (m *monster) Act() model.Action {
 				path := a.FindPath(p2p, source, target)
 				if path != nil && path.Parent != nil {
 					if path.Parent.Row == eX && path.Parent.Col == eY {
-						m.queuedAction = &action.LightAttackAction{
+						m.QueuedAction = &action.LightAttackAction{
 							Attacker: m,
 							X:        path.Parent.Row,
 							Y:        path.Parent.Col,
 						}
-						return m.queuedAction
+						return m.QueuedAction
 					} else {
-						m.queuedAction = &action.MoveAction{
+						m.QueuedAction = &action.MoveAction{
 							Mover: m,
 							X:     path.Parent.Row,
 							Y:     path.Parent.Col,
 						}
-						return m.queuedAction
+						return m.QueuedAction
 					}
 				}
 			}
 		}
 	}
-	m.queuedAction = nil
+	m.QueuedAction = nil
 	return nil
 }

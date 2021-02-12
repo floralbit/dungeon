@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/floralbit/dungeon/game/entity"
 	"log"
 	"math/rand"
 
@@ -92,12 +93,12 @@ func spawnMonsters(l *gen.Level, z *zone) {
 	for x := 0; x < l.Width; x++ {
 		for y := 0; y < l.Height; y++ {
 			if l.Objects[x][y] != nil && l.Objects[x][y].Type == gen.ObjectTypeMonsterSlot {
-				var m *monster
+				var m *entity.Monster
 				for m == nil {
 					if rand.Float32() < goblinLikelihood {
-						m = newMonster(monsterTypeGoblin)
+						m = entity.NewMonster(entity.MonsterTypeGoblin)
 					} else if rand.Float32() < skeletonLikelihood {
-						m = newMonster(monsterTypeSkeleton)
+						m = entity.NewMonster(entity.MonsterTypeSkeleton)
 					}
 				}
 
